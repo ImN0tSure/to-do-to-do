@@ -8,4 +8,6 @@ use Illuminate\Database\Eloquent\Model;
 class ProjectParticipants extends Model
 {
     use HasFactory;
+    protected $fillable  = ['project_id', 'user_id', 'status'];
+    public $timestamps = false;
 }

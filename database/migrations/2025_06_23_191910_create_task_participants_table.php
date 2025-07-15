@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id()->autoIncrement();
             $table->integer('task_id')->unsigned();
             $table->integer('user_id')->unsigned();
-            $table->string('status');
+            $table->integer('status')->nullable()->default(0);
         });
     }
 

@@ -11,14 +11,13 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('tasks', function (Blueprint $table) {
+        Schema::create('projects', function (Blueprint $table) {
             $table->id()->autoIncrement();
+            $table->string('url');
             $table->string('name');
             $table->text('description');
-            $table->date('begin_date');
-            $table->date('end_date');
-            $table->integer('priority');
-            $table->foreignId('list_id')->constrained('lists');
+            $table->timestamp('begin_date');
+            $table->timestamp('end_date')->nullable()->default(null);
         });
     }
 
@@ -27,6 +26,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('tasks');
+        Schema::dropIfExists('projects');
     }
 };
