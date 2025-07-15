@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id()->autoIncrement();
             $table->integer('user_id')->unsigned();
             $table->integer('task_id')->unsigned();
-            $table->date('date');
+            $table->timestamp('date');
             $table->text('comment');
         });
     }
