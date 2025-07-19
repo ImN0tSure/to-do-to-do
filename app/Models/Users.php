@@ -4,8 +4,8 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 
 class Users extends Model
 {
@@ -16,15 +16,18 @@ class Users extends Model
         return $this->hasOne(UserInfo::class);
     }
 
-    public function taskParticipants(): HasMany {
+    public function taskParticipants(): HasMany
+    {
         return $this->hasMany(TaskParticipant::class);
     }
 
-    public function comments(): HasMany {
+    public function comments(): HasMany
+    {
         return $this->hasMany(Comment::class);
     }
 
-    public function projectParticipants(): HasMany {
+    public function projectParticipants(): HasMany
+    {
         return $this->hasMany(ProjectParticipant::class);
     }
 

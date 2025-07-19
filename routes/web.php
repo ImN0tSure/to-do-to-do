@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\CabinetController;
 use App\Http\Controllers\ProjectsController;
+use App\Http\Controllers\TasklistController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -19,4 +20,9 @@ Route::get('/', function () {
     return view('welcome');
 });
 Route::get('/cabinet', [CabinetController::class, 'index']);
-Route::resource('project', ProjectsController::class);
+Route::group(['prefix' => 'project'], function () {
+    Route::resource('/', ProjectsController::class);
+    Route::resource('{project}/tasklist', TasklistController::class);
+});
+#Route::resource('project', ProjectsController::class);
+#Route::resource('tasklist', TasklistController::class);

@@ -2,7 +2,6 @@
 
 namespace Database\Seeders;
 
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
@@ -23,7 +22,7 @@ class TasksSeeder extends Seeder
                 'end_date' => date('Y-m-d H:i:s', time() - 86400),
                 'priority' => 2,
                 'in_progress' => false,
-                'list_id' => 3,
+                'tasklist_id' => 3,
             ],
             [
                 'name' => 'Разработать таблицы для БД',
@@ -32,7 +31,7 @@ class TasksSeeder extends Seeder
                 'end_date' => date('Y-m-d H:i:s', time() + 86400 * 2),
                 'priority' => 2,
                 'in_progress' => true,
-                'list_id' => 2,
+                'tasklist_id' => 2,
             ],
             [
                 'name' => 'Создать миграции',
@@ -41,7 +40,7 @@ class TasksSeeder extends Seeder
                 'end_date' => date('Y-m-d H:i:s', time() + 86400 * 5),
                 'priority' => 1,
                 'in_progress' => true,
-                'list_id' => 2,
+                'tasklist_id' => 2,
             ],
             [
                 'name' => 'Создать сиды',
@@ -50,7 +49,7 @@ class TasksSeeder extends Seeder
                 'end_date' => date('Y-m-d H:i:s', time() + 86400 * 5),
                 'priority' => 2,
                 'in_progress' => true,
-                'list_id' => 2,
+                'tasklist_id' => 2,
             ],
             [
                 'name' => 'Разработать модели',
@@ -59,7 +58,7 @@ class TasksSeeder extends Seeder
                 'end_date' => date('Y-m-d H:i:s', time() + 86400 * 8),
                 'priority' => 2,
                 'in_progress' => true,
-                'list_id' => 1,
+                'tasklist_id' => 1,
             ],
             [
                 'name' => 'Разработать контроллеры',
@@ -68,7 +67,7 @@ class TasksSeeder extends Seeder
                 'end_date' => date('Y-m-d H:i:s', time() + 86400 * 12),
                 'priority' => 2,
                 'in_progress' => true,
-                'list_id' => 1,
+                'tasklist_id' => 1,
             ],
         ]);
     }

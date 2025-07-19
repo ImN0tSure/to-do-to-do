@@ -1,5 +1,5 @@
 <x-layout>
-    <form action="{{route('project.store')}}" method="post">
+    <form action="{{route('store')}}" method="post">
         @csrf
         <input type="text" name="name" placeholder="Название проекта"><br>
         <textarea name="description" placeholder="Описание проекта"></textarea><br>

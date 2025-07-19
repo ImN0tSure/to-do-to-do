@@ -22,7 +22,7 @@ class DatabaseSeeder extends Seeder
             UsersSeeder::class,
             UserInfoSeeder::class,
             ProjectsSeeder::class,
-            ListsSeeder::class,
+            TasklistSeeder::class,
             TasksSeeder::class,
             TaskParticipantsSeeder::class,
             ProjectParticipantsSeeder::class,

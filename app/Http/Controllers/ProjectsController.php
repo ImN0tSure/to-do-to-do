@@ -2,8 +2,8 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\ProjectParticipant;
 use App\Models\Project;
+use App\Models\ProjectParticipant;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 
@@ -51,44 +51,64 @@ class ProjectsController extends Controller
         $validData['begin_date'] = date('Y-m-d H:i:s');
 
         $participate = [
-            'user_id' => 3,
+            'user_id' => 3, // Поменять на подтягивающийся из сессии
             'project_id' => Project::createProject($validData),
             'status' => 1,
         ];
 
         ProjectParticipant::create($participate);
-        return redirect()->route('project.index');
+        return redirect()->route('index');
     }
 
     /**
      * Display the specified resource.
      */
-    public function show(string $id)
+    public function show(string $url)
     {
+        $project = Project::where('url', $url)->first();
 
+        $response = [
+            'projects_list' => $this->index(),
+            'tasklist' => $project->tasklists,
+            'tasks' => $project->tasks,
+        ];
+
+
+        dump($response);
     }
 
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(string $id)
+    public function edit(string $url)
     {
-        //
+        $data = [
+            'project' => Project::where('url', $url)->first()
+        ];
+
+        return view('project.edit', $data);
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id)
+    public function update(Request $request, string $url)
     {
-        //
+        $validData = $request->validate([
+            'name' => 'required',
+            'description' => 'required | max:255',
+        ]);
+
+        Project::where('url', $url)->update($validData);
+        return redirect()->route('project.index');
     }
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(string $id)
+    public function destroy(string $url)
     {
-        //
+        Project::where('url', $url)->delete();
+        return redirect()->route('index');
     }
 }
