@@ -93,7 +93,6 @@ class TasklistController extends Controller
      */
     public function update(Request $request, string $project_url, string $tasklist_id)
     {
-
         $validatedData = $request->validate([
             'name' => 'required|max:255',
             'description' => 'max:255',
