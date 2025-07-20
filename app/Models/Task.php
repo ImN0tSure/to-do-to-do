@@ -13,6 +13,9 @@ class Task extends Model
 {
     use HasFactory;
 
+    protected $fillable = ['name', 'description', 'begin_date', 'end_date', 'priority', 'tasklist_id'];
+    public $timestamps = false;
+
     public static function forToday(array $tasks_id): Collection
     {
         return DB::table("tasks")

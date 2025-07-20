@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\CabinetController;
 use App\Http\Controllers\ProjectsController;
+use App\Http\Controllers\TaskController;
 use App\Http\Controllers\TasklistController;
 use Illuminate\Support\Facades\Route;
 
@@ -23,6 +24,5 @@ Route::get('/cabinet', [CabinetController::class, 'index']);
 Route::group(['prefix' => 'project'], function () {
     Route::resource('/', ProjectsController::class);
     Route::resource('{project}/tasklist', TasklistController::class);
+    Route::resource('{project}/task', TaskController::class);
 });
-#Route::resource('project', ProjectsController::class);
-#Route::resource('tasklist', TasklistController::class);
