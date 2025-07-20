@@ -63,11 +63,9 @@ class TasklistController extends Controller
             return $this->tasklistNotFound;
         }
 
-        $response = [
+        return [
             'tasklist' => $tasklist,
         ];
-
-        return $response;
     }
 
     /**
@@ -114,7 +112,7 @@ class TasklistController extends Controller
         return redirect(route('tasklist.index', $project_url));
     }
 
-    protected function getProjectId($project_url)
+    protected function getProjectId($project_url) //Вынести функцию в сервисы
     {
         return Project::where('url', '=', $project_url)->value('id');
     }
