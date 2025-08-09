@@ -17,6 +17,9 @@
 <footer>
     © 2025 To-do to-do — Все права защищены?
 </footer>
+@isset($scripts)
+    {{ $scripts }}
+@endisset
 <script>
     function updateClock() {
         const clockDiv = document.querySelector('.clock');

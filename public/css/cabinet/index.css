@@ -1,0 +1,14 @@
+@import url(content.css);
+@import url(sidebar.css);
+@import url(notifications.css);
+
+.cabinet {
+    flex-grow: 1;
+    display: flex;
+    padding: 40px 60px;
+    gap: 30px;
+    background: #fff0f6;
+    border-radius: 40px 40px 0 0;
+    box-shadow: 0 10px 30px rgba(240, 98, 146, 0.3);
+    user-select: none;
+}

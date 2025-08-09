@@ -1,0 +1,86 @@
+/* Форма редактирования */
+.profile-edit {
+    flex-grow: 1;
+    background: #ffd0e0;
+    border-radius: 40px;
+    padding: 40px 50px;
+    box-shadow: 0 6px 20px rgba(240, 98, 146, 0.35);
+    display: flex;
+    flex-direction: column;
+    max-width: 1000px;
+}
+
+.profile-edit h2 {
+    margin-top: 0;
+    font-size: 2em;
+    color: #9e1b56;
+    margin-bottom: 30px;
+    text-shadow: 1px 1px 3px #d83979;
+    text-align: left;
+}
+
+.profile-edit label {
+    font-size: 1.1em;
+    color: #7a2350;
+    font-weight: 600;
+    margin-bottom: 10px;
+    display: block;
+}
+
+.profile-edit input, .profile-edit textarea {
+    width: 100%;
+    padding: 12px 18px;
+    margin-bottom: 20px;
+    border-radius: 20px;
+    border: 1px solid #d83979;
+    font-size: 1em;
+    color: #7a2350;
+    background: #fff0f6;
+    transition: border-color 0.3s ease;
+}
+
+.profile-edit input[type="file"] {
+    padding: 0;
+    border: none;
+    background: transparent;
+}
+
+.profile-edit textarea {
+    resize: vertical;
+    height: 150px;
+}
+
+.profile-edit input:focus, .profile-edit textarea:focus {
+    border-color: #f06292;
+    outline: none;
+}
+
+.profile-edit .avatar-preview {
+    width: 150px;
+    height: 150px;
+    border-radius: 50%;
+    margin-bottom: 20px;
+    object-fit: cover;
+    border: 3px solid #f06292;
+    margin-right: 20px;
+}
+
+.avatar-block, .profile-edit label {
+    text-align: left;
+}
+
+.save-button {
+    background: #f06292;
+    color: white;
+    font-size: 1.2em;
+    padding: 12px 25px;
+    border-radius: 25px;
+    cursor: pointer;
+    transition: background 0.3s ease;
+    margin-top: 20px;
+    border: none;
+}
+
+.save-button:hover {
+    background: #d83979;
+}

@@ -16,11 +16,11 @@ class Task extends Model
     protected $fillable = ['name', 'description', 'begin_date', 'end_date', 'priority', 'tasklist_id'];
     public $timestamps = false;
 
-    public static function forToday(array $tasks_id): Collection
+    public static function forToday(array $tasks_id, string $order_by = 'id', string $order_direction = 'asc'): Collection
     {
         return DB::table("tasks")
             ->whereIn("id", $tasks_id)
-            ->orderBy("id", 'asc')
+            ->orderBy($order_by, $order_direction)
             ->get();
     }
 

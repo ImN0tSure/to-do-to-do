@@ -1,0 +1,110 @@
+@import url('https://fonts.googleapis.com/css2?family=Comic+Neue:wght@700&display=swap');
+
+* {
+    margin: 0;
+    padding: 0;
+    text-decoration: none;
+    list-style: none;
+    box-sizing: border-box;
+    /*font-family: "Open Sans", sans-serif;*/
+}
+
+body {
+    margin: 0;
+    padding: 0;
+    font-family: 'Comic Neue', cursive, Arial, sans-serif;
+    background: linear-gradient(135deg, #f8c8dc, #fce7f0);
+    color: #4b2c42;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+header {
+    background: #f06292;
+    padding: 20px 40px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: 0 4px 8px rgba(240, 98, 146, 0.5);
+    border-bottom-left-radius: 40px;
+    border-bottom-right-radius: 40px;
+    color: white;
+    user-select: none;
+    position: relative;
+}
+
+header .logo {
+    font-size: 2em;
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-shadow: 1px 1px 3px #d83979;
+}
+
+.clock {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 1.4em;
+    font-weight: 600;
+    color: white;
+    text-shadow: 1px 1px 3px #d83979;
+}
+
+nav a {
+    color: #ffe1eb;
+    text-decoration: none;
+    margin-left: 30px;
+    font-weight: 600;
+    font-size: 1.1em;
+    transition: color 0.3s ease;
+    position: relative;
+}
+
+nav a:hover {
+    color: #fff;
+}
+
+nav a::after {
+    content: '';
+    position: absolute;
+    bottom: -6px;
+    left: 0;
+    width: 100%;
+    height: 3px;
+    background: #ffd0e0;
+    border-radius: 4px;
+    transform: scaleX(0);
+    transition: transform 0.3s ease;
+    transform-origin: right;
+}
+
+nav a:hover::after {
+    transform: scaleX(1);
+    transform-origin: left;
+}
+
+/* Главная. Фон.*/
+.main {
+    flex-grow: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 60px 20px;
+    text-align: center;
+}
+
+/* Конец фона.*/
+
+footer {
+    background: #f06292;
+    text-align: center;
+    padding: 20px 10px;
+    color: #fff0f6;
+    font-weight: 600;
+    border-top-left-radius: 40px;
+    border-top-right-radius: 40px;
+    box-shadow: 0 -4px 10px rgba(240, 98, 146, 0.4);
+    user-select: none;
+}
