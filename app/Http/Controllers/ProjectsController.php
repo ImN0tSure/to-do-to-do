@@ -63,18 +63,19 @@ class ProjectsController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(string $url)
+    public function show(): string
     {
-        $project = Project::where('url', $url)->first();
-
-        $response = [
-            'projects_list' => $this->index(),
-            'tasklist' => $project->tasklists,
-            'tasks' => $project->tasks,
-        ];
-
-
-        dump($response);
+        return 'index.project.page';
+//        $project = Project::where('url', $url)->first();
+//
+//        $response = [
+//            'projects_list' => $this->index(),
+//            'tasklist' => $project->tasklists,
+//            'tasks' => $project->tasks,
+//        ];
+//
+//
+//        dump($response);
     }
 
     /**

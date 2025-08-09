@@ -19,12 +19,17 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::get('/', function () {
-    return view('welcome');
-});
-Route::get('/cabinet', [CabinetController::class, 'index']);
+    return view('main');
+})->name('main');
 Route::group(['prefix' => 'project'], function () {
     Route::resource('/', ProjectsController::class);
     Route::resource('{project}/tasklist', TasklistController::class);
     Route::resource('{project}/task', TaskController::class);
 });
+Route::get('login', [UserController::class, 'login'])->name('login');
+Route::post('auth', [UserController::class, 'auth'])->name('auth');
 Route::resource('user', UserController::class);
+
+Route::get('/cabinet', [CabinetController::class, 'index']);
+
+

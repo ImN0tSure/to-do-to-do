@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\User;
 use App\Models\UserInfo;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 
 class UserController extends Controller
@@ -22,7 +23,7 @@ class UserController extends Controller
      */
     public function create()
     {
-        return view('user.create');
+        return view('login.register');
     }
 
     /**
@@ -95,5 +96,13 @@ class UserController extends Controller
     public function destroy(string $id)
     {
         $this->destroy($id);
+    }
+
+    public function login() {
+        return view('login.auth');
+    }
+
+    public function auth() {
+        return 'authorization function';
     }
 }

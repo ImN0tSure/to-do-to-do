@@ -9,12 +9,12 @@ class CabinetController extends Controller
 {
     public function index()
     {
-        $response = [
+        $data = [
             'for_today' => $this->ForTodayList(),
             'projects' => $this->projectsList(),
         ];
 
-        return $response;
+        return view('cabinet.index', $data);
     }
 
     /*
