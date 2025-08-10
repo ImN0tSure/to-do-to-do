@@ -57,17 +57,34 @@ td {
     background-color: #fce7f0;
     color: #7a2350;
 }
+td>a {
+    color: #7a2350;
+}
 
 td:nth-child(n+2), th:nth-child(n+2) {
     text-align: center;
 }
 
-tr .status {
+tr .status.in_progress{
+    color: #d1a12b;
+}
+
+tr .status.complete{
     color: #00796b;
 }
 
-tr .priority {
+tr .priority.high {
     color: red;
+    font-size: 1.1em;
+}
+
+tr .priority.middle {
+    color: #5ea83a;
+    font-size: 1.1em;
+}
+
+tr .priority.low {
+    color: #163697;
     font-size: 1.1em;
 }
 
@@ -81,8 +98,13 @@ tr {
     border-radius: 25px;
 }
 
+tr:hover {
+    cursor:pointer;
+}
+
 .task > thead > tr > th:first-child, .task > tbody > tr > td:first-child {
     border-radius: 25px 0 0 25px;
+    width:50%;
 }
 
 .task > thead > tr > th:last-child, .task > tbody > tr > td:last-child {

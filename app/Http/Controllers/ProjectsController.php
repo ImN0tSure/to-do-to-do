@@ -43,7 +43,6 @@ class ProjectsController extends Controller
             'end_date' => 'max:255',
         ]);
 
-
         do {
             $validData['url'] = Str::random(10);
         } while (Project::where('url', $validData['url'])->first() != null);
@@ -57,7 +56,7 @@ class ProjectsController extends Controller
         ];
 
         ProjectParticipant::create($participate);
-        return redirect()->route('index');
+        return redirect()->route('cabinet');
     }
 
     /**
@@ -67,14 +66,15 @@ class ProjectsController extends Controller
     {
         $project = Project::where('url', $project_url)->first();
 
-        $response = [
-            'projects_list' => $this->index(),
-            'tasklist' => $project->tasklists,
-            'tasks' => $project->tasks,
+        $data = [
+            'projects' => $this->index(),
+            'current_project' => $project,
+            'participants' => $project->participants()->select('name', 'surname', 'avatar_img')->get(),
+            'tasklists' => $project->tasklists()->with('tasks')->get(),
         ];
 
-
-        dump($response);
+        return view('project.show', $data);
+        #dump($data);
     }
 
     /**

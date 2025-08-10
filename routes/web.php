@@ -34,6 +34,6 @@ Route::get('login', [UserController::class, 'login'])->name('login');
 Route::post('auth', [UserController::class, 'auth'])->name('auth');
 Route::resource('user', UserController::class);
 
-Route::get('/cabinet', [CabinetController::class, 'index']);
+Route::get('cabinet', [CabinetController::class, 'index'])->name('cabinet');
 
 

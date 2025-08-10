@@ -39,7 +39,7 @@
                         <thead>
                         <tr>
                             <th>Задача</th>
-                            <th>Список</th>
+                            <th>Статус</th>
                             <th>Приоритет</th>
                             <th>Осталось</th>
                         </tr>
@@ -47,11 +47,15 @@
                         <tbody>
                         @foreach ($tasks as $task)
                             <tr>
-                                <td>{{ $task->name }}</td>
+                                <td>
+                                    <a href="{{ route('task.show', [$task->project->url, $task->id]) }}">
+                                        {{ $task->name }}
+                                    </a>
+                                </td>
 
                                 @switch($task->in_progress)
                                     @case(1)
-                                        <td class="status in_progress">В работе</td>
+                                        <td class="status in_progress">Актуально</td>
                                         @break
                                     @default
                                         <td class="status complete">Завершено</td>

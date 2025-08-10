@@ -6,6 +6,8 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasManyThrough;
+use Illuminate\Database\Eloquent\Relations\HasOneThrough;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 
@@ -24,9 +26,16 @@ class Task extends Model
             ->get();
     }
 
-    public function taskParticipants(): HasMany
+    public function executor(): HasOneThrough
     {
-        return $this->hasMany(TaskParticipant::class);
+        return $this->hasOneThrough(
+            UserInfo::class,
+            TaskParticipant::class,
+            'task_id',
+            'user_id',
+            'id',
+            'user_id'
+        );
     }
 
     public function comments(): HasMany
@@ -37,5 +46,16 @@ class Task extends Model
     public function tasklist(): BelongsTo
     {
         return $this->belongsTo(Tasklist::class);
+    }
+
+    public function project(): HasOneThrough {
+        return $this->hasOneThrough(
+            Project::class,
+            Tasklist::class,
+            'id',
+            'id',
+            'tasklist_id',
+            'project_id'
+        );
     }
 }
