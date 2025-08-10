@@ -1,5 +1,5 @@
 <div>
-    <form method="POST" action="{{ route('update', $project->url) }}">
+    <form method="POST" action="{{ route('project.update', $project->url) }}">
         @csrf
         @method('patch')
         <input type="text" name="name" value="{{ $project->name }}">

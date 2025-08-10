@@ -5,14 +5,14 @@ namespace Database\Seeders;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
 
-class UserInfoSeeder extends Seeder
+class UserInfosSeeder extends Seeder
 {
     /**
      * Run the database seeds.
      */
     public function run(): void
     {
-        DB::table('user_info')->insert([
+        DB::table('user_infos')->insert([
             [
                 'user_id' => 1,
                 'surname' => 'Adminov',
@@ -21,6 +21,7 @@ class UserInfoSeeder extends Seeder
                 'avatar_img' => 'adminovich.png',
                 'nickname' => 'Admin',
                 'phone' => '5555555',
+                'contact_email' => 'cont.admin@admin.com',
             ],
             [
                 'user_id' => 2,
@@ -30,6 +31,7 @@ class UserInfoSeeder extends Seeder
                 'avatar_img' => 'valera.png',
                 'nickname' => 'Valera',
                 'phone' => '6666666',
+                'contact_email' => 'cont.valer@va.com',
             ],
             [
                 'user_id' => 3,
@@ -39,6 +41,7 @@ class UserInfoSeeder extends Seeder
                 'avatar_img' => 'petya.png',
                 'nickname' => 'Petya',
                 'phone' => '2222222',
+                'contact_email' => 'cont.pety@pe.com',
             ],
             [
                 'user_id' => 4,
@@ -48,6 +51,7 @@ class UserInfoSeeder extends Seeder
                 'avatar_img' => 'tatiana.png',
                 'nickname' => 'Tatiana',
                 'phone' => '1111111',
+                'contact_email' => 'cont.tati@ta.com',
             ],
         ]);
     }

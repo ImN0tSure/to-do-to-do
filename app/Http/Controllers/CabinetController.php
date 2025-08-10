@@ -9,12 +9,11 @@ class CabinetController extends Controller
 {
     public function index()
     {
-        $response = [
-            'for_today' => $this->ForTodayList(),
+        $data = [
+            'tasks' => $this->ForTodayList(),
             'projects' => $this->projectsList(),
         ];
-
-        return $response;
+        return view('cabinet.main', $data);
     }
 
     /*
@@ -24,9 +23,16 @@ class CabinetController extends Controller
     public function ForTodayList()
     {
         $user_id = 3;
-        $tasks_id = TaskParticipant::where('user_id', $user_id)->pluck('task_id')->toArray();
 
-        return Task::forToday($tasks_id);
+        $tasks_id = TaskParticipant::where('user_id', $user_id)
+            ->pluck('task_id')
+            ->toArray();
+
+        return Task::whereIn('id', $tasks_id)
+            ->orderBy('end_date', 'desc')
+            ->with(['project:url'])->get();
+
+        #return Task::forToday($tasks_id, 'in_progress', 'desc');
     }
 
     /*

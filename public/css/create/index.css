@@ -1,0 +1,79 @@
+.create {
+    flex-grow: 1;
+    display: flex;
+    padding: 40px 60px;
+    gap: 30px;
+    background: #fff0f6;
+    border-radius: 40px 40px 0 0;
+    box-shadow: 0 10px 30px rgba(240, 98, 146, 0.3);
+    user-select: none;
+}
+
+/* Форма создания проекта */
+.project-create, .task-create {
+    flex-grow: 1;
+    background: #ffd0e0;
+    border-radius: 40px;
+    padding: 40px 50px;
+    box-shadow: 0 6px 20px rgba(240, 98, 146, 0.35);
+    display: flex;
+    flex-direction: column;
+}
+
+.project-create h2, .task-create h2 {
+    margin-top: 0;
+    font-size: 2em;
+    color: #9e1b56;
+    margin-bottom: 30px;
+    text-shadow: 1px 1px 3px #d83979;
+}
+
+.project-create label, .task-create label {
+    font-size: 1.1em;
+    color: #7a2350;
+    font-weight: 600;
+    margin-bottom: 10px;
+    display: block;
+}
+
+.project-create input, .project-create textarea, .task-create input, .task-create textarea, .task-create select {
+    width: 100%;
+    padding: 12px 18px;
+    margin-bottom: 20px;
+    border-radius: 20px;
+    border: 1px solid #d83979;
+    font-size: 1em;
+    color: #7a2350;
+    background: #fff0f6;
+    transition: border-color 0.3s ease;
+}
+
+.project-create textarea, .task-create textarea {
+    resize: vertical;
+    height: 150px;
+}
+
+.project-create input:focus,
+.project-create textarea:focus,
+.task-create input:focus,
+.task-create textarea:focus,
+.task-create select:focus {
+    border-color: #f06292;
+    outline: none;
+}
+
+.save-button {
+    background: #f06292;
+    color: white;
+    font-size: 1.2em;
+    padding: 12px 25px;
+    border-radius: 25px;
+    cursor: pointer;
+    transition: background 0.3s ease;
+    margin-top: 20px;
+    border: none;
+}
+
+.save-button:hover {
+    background: #d83979;
+}

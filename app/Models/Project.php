@@ -25,6 +25,7 @@ class Project extends Model
     {
         return DB::table("projects")
             ->whereIn("id", $projects_id)
+            ->select("id", "url", "name", "description")
             ->orderBy("id", 'asc')
             ->get();
     }
@@ -47,6 +48,18 @@ class Project extends Model
     public function tasks(): HasManyThrough
     {
         return $this->hasManyThrough(Task::class, Tasklist::class);
+    }
+
+    public function participants(): HasManyThrough
+    {
+        return $this->hasManyThrough(
+            UserInfo::class,
+            ProjectParticipant::class,
+            'project_id',
+            'user_id',
+            'id',
+            'user_id'
+        );
     }
 
 

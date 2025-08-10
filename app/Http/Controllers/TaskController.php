@@ -71,6 +71,8 @@ class TaskController extends Controller
         $task = Project::where('url', $project_url)
             ->first()
             ->tasks()
+            ->with('executor')
+            ->with('tasklist')
             ->get()
             ->where('id', $id)
             ->first();
@@ -79,7 +81,20 @@ class TaskController extends Controller
             return $this->taskNotFound;
         }
 
-        return view('task.show', ['task' => $task]);
+        $participants_and_tasklists = Project::where('url', $project_url)
+            ->with('participants')
+            ->with('tasklists')
+            ->first();
+
+        $data = [
+            'task' => $task,
+            'participants' => $participants_and_tasklists->participants,
+            'tasklists' => $participants_and_tasklists->tasklists,
+            'project_url' => $project_url,
+        ];
+
+        #dump($data);
+        return view('task.show', $data);
     }
 
     /**

@@ -10,7 +10,7 @@ return new class extends Migration {
      */
     public function up(): void
     {
-        Schema::create('user_info', function (Blueprint $table) {
+        Schema::create('user_infos', function (Blueprint $table) {
             $table->id()->autoIncrement();
             $table->foreignId('user_id')->constrained('users');
             $table->string('surname');
@@ -18,7 +18,8 @@ return new class extends Migration {
             $table->string('patronymic')->nullable();
             $table->string('avatar_img');
             $table->string('nickname')->nullable()->unique();
-            $table->string('phone')->nullable()->unique();
+            $table->string('phone')->nullable();
+            $table->string('contact_email')->nullable();
         });
     }
 
