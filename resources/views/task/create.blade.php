@@ -95,7 +95,7 @@
                     <div class="form-field">
                         <label for="end_time">Время окончания</label>
                         <input type="time" id="end_time" name="end_time" required style="width: 20%">
-                        @error('end_date')
+                        @error('end_time')
                         <div class="error-message">Введите корректное время.</div>
                         @enderror
                     </div>

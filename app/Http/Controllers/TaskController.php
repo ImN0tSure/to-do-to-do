@@ -70,21 +70,21 @@ class TaskController extends Controller
             'priority' => 'integer|required|min:1|max:3',
         ]);
 
-        $validate_data['project_id'] = $project_id;
         $validate_data['begin_date'] = date('Y-m-d H:i');
-        $validate_data['end_date'] .=  ' ' . $validate_data['end_time'];
+        $validate_data['end_date'] .= ' ' . $validate_data['end_time'];
         unset($validate_data['end_time']);
 
-        $task_participant = [
-            'user_id' => $validate_data['participant'],
-            'status' => 0,
-        ];
+        $task_participant = $validate_data['participant'];
         unset($validate_data['participant']);
 
-        if ($task_participant['user_id']) {
-            $task_participant['task_id'] = (Task::create($validate_data))->id;
+        if ($task_participant) {
+            $task_id = (Task::create($validate_data))->id;
 
-            TaskParticipant::create($task_participant);
+            TaskParticipant::create([
+                'task_id' => $task_id,
+                'user_id' => $task_participant,
+                'status' => 0,
+            ]);
         } else {
             Task::create($validate_data);
         }
@@ -106,10 +106,6 @@ class TaskController extends Controller
             ->where('id', $id)
             ->first();
 
-        if ($task === null) {
-            return $this->task_not_found;
-        }
-
         $participants_and_tasklists = Project::where('url', $project_url)
             ->with('participants')
             ->with('tasklists')
@@ -122,7 +118,6 @@ class TaskController extends Controller
             'project_url' => $project_url,
         ];
 
-        #dump($data);
         return view('task.show', $data);
     }
 
@@ -162,27 +157,60 @@ class TaskController extends Controller
     {
         $project_id = $this->getProjectId($project_url);
 
-
         $validate_data = $request->validate([
-            'name' => 'required|max:255',
-            'description' => 'required|max:255',
-            'tasklist_id' => 'integer|exists:tasklists,id',
+            'name' => 'required|max:255|min:3',
+            'description' => 'required|max:1500',
+            'participant' => [
+                'nullable',
+                'integer',
+                Rule::exists('project_participants', 'user_id')
+                    ->where(function ($query) use ($project_id) {
+                        $query->where('project_id', $project_id);
+                    })
+            ],
+            'tasklist_id' => [
+                'required',
+                'integer',
+                Rule::exists('tasklists', 'id')
+                    ->where(function ($query) use ($project_id) {
+                        $query->where('project_id', $project_id);
+                    }),
+            ],
+            'end_date' => 'required|date',
+            'end_time' => 'required|date_format:H:i',
             'priority' => 'integer|required|min:1|max:3',
-            'date' => 'required|date',
-            'time' => 'required|date_format:H:i:s',
             'in_progress' => 'boolean',
         ]);
 
-        if ($this->tasklistBelongsToProject($project_id, $validate_data['tasklist_id'])) {
-            $validate_data['end_date'] = $validate_data['date'] . ' ' . $validate_data['time'];
-            unset($validate_data['date']);
-            unset($validate_data['time']);
-            Task::where('id', $task_id)
-                ->update($validate_data);
-            return redirect()->route('task.index', $project_url);
+        $validate_data['end_date'] .= ' ' . $validate_data['end_time'];
+        unset($validate_data['end_time']);
+
+        $new_participant = $validate_data['participant'];
+        unset($validate_data['participant']);
+
+        Task::where('id', $task_id)
+            ->update($validate_data);
+
+        $current_participant_record = TaskParticipant::where('task_id', $task_id)->first() ?? null;
+
+        if ($current_participant_record !== null) {
+            if ($new_participant !== null) {
+                TaskParticipant::where('id', $current_participant_record->id)
+                    ->update(['user_id' => $new_participant]);
+            } else {
+                TaskParticipant::destroy($current_participant_record->id);
+            }
         } else {
-            return $this->task_not_found;
+            if ($new_participant !== null) {
+                TaskParticipant::create([
+                    'task_id' => $task_id,
+                    'user_id' => $new_participant,
+                    'status' => 0,
+                ]);
+            }
         }
+
+        return redirect()->route('project.show', $project_url);
     }
 
     /**
