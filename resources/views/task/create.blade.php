@@ -1,35 +1,123 @@
-<form action="{{route('task.store', $project[0]->url)}}" method="post">
-    @csrf
-    <p>
-        Название задачи<br>
-        <input type="text" name="name" placeholder="Название задачи."><br>
-    </p>
-    <p>
-        Описание задачи<br>
-        <input type="text" name="description" placeholder="Описание. Не обязательно."><br>
-    </p>
-    <p>
-        Список<br>
-        <select name="tasklist_id">
-            @foreach ($project[0]->tasklists as $tasklist)
-                <option value="{{ $tasklist->id }}">
-                    {{ $tasklist->name }}
-                </option>
-            @endforeach
-        </select><br>
-    </p>
-    <p>
-        Приоритет<br>
-        <select name="priority">
-            <option value="1">Высокий</option>
-            <option selected value="2">Средний</option>
-            <option value="3">Низкий</option>
-        </select>
-    </p>
-    <p>
-        Дата и время окончания<br>
-        <input name="date" type="date">
-        <input name="time" type="time"><br>
-    </p>
-    <button type="submit" name="create">Создать</button>
-</form>
+<x-layout>
+    <x-slot:head_components>
+        <title>
+            Создать задачу
+        </title>
+        <link rel="stylesheet" href="{{ asset('css/index.css') }}">
+        <link rel="stylesheet" href="{{ asset('css/create/index.css') }}">
+    </x-slot:head_components>
+
+    <x-slot:nav>
+        <nav>
+            <a href="{{ route('cabinet') }}">Главная</a>
+            <a href="#">Уведомления</a>
+            <a href="#">Профиль</a>
+        </nav>
+    </x-slot:nav>
+
+    <x-slot:main>
+        <main class="create">
+            <section class="task-create">
+                <h2>Новая задача</h2>
+                <form action="{{ route('task.store', $project->url) }}" method="POST">
+                    @csrf
+                    <!-- Поле для заголовка задачи -->
+                    <div class="form-field">
+                        <label for="taskTitle">Заголовок задачи</label>
+                        <input
+                            type="text"
+                            id="taskTitle"
+                            name="name"
+                            placeholder="Введите заголовок задачи"
+                            required
+                        >
+                        @error('name')
+                        <div class="error-message">Заголовок обязателен. Минимум 3 символа.</div>
+                        @enderror
+                    </div>
+
+                    <!-- Поле для краткого описания задачи -->
+                    <div class="form-field">
+                        <label for="taskDescription">Краткое описание задачи</label>
+                        <textarea
+                            id="taskDescription"
+                            name="description"
+                            placeholder="Введите краткое описание задачи"
+                            required
+                        ></textarea>
+                        @error('description')
+                        <div class="error-message">Описание обязательно. Максимум 1500 символов.</div>
+                        @enderror
+                    </div>
+
+                    <!-- Поле для выбора исполнителя -->
+                    <div class="form-field">
+                        <label for="participant">Исполнитель</label>
+                        <select id="participant" name="participant">
+                            <option value="" selected></option>
+                            @foreach($project->participants as $participant)
+                                <option value="{{ $participant->id }}">
+                                    {{ $participant->name }} {{ $participant->suename }}
+                                </option>
+                            @endforeach
+                        </select>
+                        @error('participant')
+                        <div class="error-message">Исполнителя не существует.</div>
+                        @enderror
+                    </div>
+
+                    <!-- Поле для выбора списка -->
+                    <div class="form-field">
+                        <label for="tasklist">Список</label>
+                        <select id="tasklist" name="tasklist_id" required>
+                            <option selected></option>
+                            @foreach($project->tasklists as $tasklist)
+                                <option value="{{ $tasklist->id }}">
+                                    {{ $tasklist->name }}
+                                </option>
+                            @endforeach
+                        </select>
+                        @error('tasklist_id')
+                        <div class="error-message">Список не принадлежит проекту.</div>
+                        @enderror
+                    </div>
+
+                    <!-- Поле для даты окончания -->
+                    <div class="form-field">
+                        <label for="end_date">Дата окончания</label>
+                        <input type="date" id="end_date" name="end_date" required style="width: 20%">
+                        @error('end_date')
+                        <div class="error-message">Введите корректную дату.</div>
+                        @enderror
+                    </div>
+
+                    <!-- Поле для время окончания -->
+                    <div class="form-field">
+                        <label for="end_time">Время окончания</label>
+                        <input type="time" id="end_time" name="end_time" required style="width: 20%">
+                        @error('end_date')
+                        <div class="error-message">Введите корректное время.</div>
+                        @enderror
+                    </div>
+
+                    <!-- Поле приоритета -->
+                    <div class="form-field">
+                        <label for="priority">Приоритет</label>
+                        <select id="priority" name="priority" required>
+                            <option value="1">Высокий</option>
+                            <option value="2">Средний</option>
+                            <option value="3">Низкий</option>
+                        </select>
+                        @error('priority')
+                        <div class="error-message">Некорректно выбран приоритет.</div>
+                        @enderror
+                    </div>
+
+                    <!-- Кнопка сохранения -->
+                    <button type="submit" class="save-button">Сохранить</button>
+                </form>
+            </section>
+        </main>
+    </x-slot:main>
+
+</x-layout>

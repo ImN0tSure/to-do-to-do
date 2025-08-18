@@ -40,6 +40,6 @@ class CabinetController extends Controller
      */
     public function projectsList()
     {
-        return ProjectsController::index();
+        return ProjectController::index();
     }
 }

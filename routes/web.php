@@ -1,7 +1,7 @@
 <?php
 
 use App\Http\Controllers\CabinetController;
-use App\Http\Controllers\ProjectsController;
+use App\Http\Controllers\ProjectController;
 use App\Http\Controllers\TaskController;
 use App\Http\Controllers\TasklistController;
 use App\Http\Controllers\UserController;
@@ -22,11 +22,11 @@ Route::get('/', function () {
     return view('main');
 })->name('main');
 //Route::group(['prefix' => 'project'], function () {
-//    Route::resource('', ProjectsController::class);
+//    Route::resource('', ProjectController::class);
 //    Route::resource('{project}/tasklist', TasklistController::class);
 //    Route::resource('{project}/task', TaskController::class);
 //});
-Route::resource('project', ProjectsController::class);
+Route::resource('project', ProjectController::class);
 Route::resource('project/{project}/tasklist', TasklistController::class);
 Route::resource('project/{project}/task', TaskController::class);
 
@@ -35,5 +35,3 @@ Route::post('auth', [UserController::class, 'auth'])->name('auth');
 Route::resource('user', UserController::class);
 
 Route::get('cabinet', [CabinetController::class, 'index'])->name('cabinet');
-
-

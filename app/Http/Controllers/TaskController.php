@@ -5,11 +5,13 @@ namespace App\Http\Controllers;
 use App\Models\Project;
 use App\Models\Task;
 use App\Models\Tasklist;
+use App\Models\TaskParticipant;
 use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
 
 class TaskController extends Controller
 {
-    protected $taskNotFound = [
+    protected $task_not_found = [
         'status' => 'error',
         'message' => 'Task not found',
     ];
@@ -28,7 +30,10 @@ class TaskController extends Controller
     public function create($project_url)
     {
         $data = [
-            'project' => Project::where('url', $project_url)->with('tasklists')->get(),
+            'project' => Project::where('url', $project_url)
+                ->with('tasklists')
+                ->with('participants')
+                ->first(),
         ];
 
         return view('task.create', $data);
@@ -40,27 +45,51 @@ class TaskController extends Controller
     public function store(Request $request, $project_url)
     {
         $project_id = $this->getProjectId($project_url);
-        $validateData = $request->validate([
-            'name' => 'required|max:255',
-            'description' => 'required|max:255',
-            'tasklist_id' => 'integer|exists:tasklists,id',
+
+        $validate_data = $request->validate([
+            'name' => 'required|max:255|min:3',
+            'description' => 'required|max:1500',
+            'participant' => [
+                'nullable',
+                'integer',
+                Rule::exists('project_participants', 'user_id')
+                    ->where(function ($query) use ($project_id) {
+                        $query->where('project_id', $project_id);
+                    })
+            ],
+            'tasklist_id' => [
+                'required',
+                'integer',
+                Rule::exists('tasklists', 'id')
+                    ->where(function ($query) use ($project_id) {
+                        $query->where('project_id', $project_id);
+                    }),
+            ],
+            'end_date' => 'required|date',
+            'end_time' => 'required|date_format:H:i',
             'priority' => 'integer|required|min:1|max:3',
-            'date' => 'required|date',
-            'time' => 'required|date_format:H:i',
         ]);
 
-        if ($this->tasklistBelongsToProject($project_id, $validateData['tasklist_id'])) {
-            $validateData['project_id'] = $project_id;
-            $validateData['begin_date'] = date('Y-m-d H:i');
-            $validateData['end_date'] = $validateData['date'] . ' ' . $validateData['time'];
-            unset($validateData['date']);
-            unset($validateData['time']);
+        $validate_data['project_id'] = $project_id;
+        $validate_data['begin_date'] = date('Y-m-d H:i');
+        $validate_data['end_date'] .=  ' ' . $validate_data['end_time'];
+        unset($validate_data['end_time']);
 
-            Task::create($validateData);
-            return redirect()->route('task.index', $project_url);
+        $task_participant = [
+            'user_id' => $validate_data['participant'],
+            'status' => 0,
+        ];
+        unset($validate_data['participant']);
+
+        if ($task_participant['user_id']) {
+            $task_participant['task_id'] = (Task::create($validate_data))->id;
+
+            TaskParticipant::create($task_participant);
         } else {
-            return redirect()->back()->withErrors(['tasklists' => 'The tasklist does not exist.']);
+            Task::create($validate_data);
         }
+
+        return redirect()->route('project.show', $project_url);
     }
 
     /**
@@ -78,7 +107,7 @@ class TaskController extends Controller
             ->first();
 
         if ($task === null) {
-            return $this->taskNotFound;
+            return $this->task_not_found;
         }
 
         $participants_and_tasklists = Project::where('url', $project_url)
@@ -112,7 +141,7 @@ class TaskController extends Controller
         $tasklists = Project::where('url', $project_url)->first()->tasklists;
 
         if ($task === null) {
-            return $this->taskNotFound;
+            return $this->task_not_found;
         }
 
         $dateTime = explode(' ', $task->end_date);
@@ -134,7 +163,7 @@ class TaskController extends Controller
         $project_id = $this->getProjectId($project_url);
 
 
-        $validateData = $request->validate([
+        $validate_data = $request->validate([
             'name' => 'required|max:255',
             'description' => 'required|max:255',
             'tasklist_id' => 'integer|exists:tasklists,id',
@@ -144,15 +173,15 @@ class TaskController extends Controller
             'in_progress' => 'boolean',
         ]);
 
-        if ($this->tasklistBelongsToProject($project_id, $validateData['tasklist_id'])) {
-            $validateData['end_date'] = $validateData['date'] . ' ' . $validateData['time'];
-            unset($validateData['date']);
-            unset($validateData['time']);
+        if ($this->tasklistBelongsToProject($project_id, $validate_data['tasklist_id'])) {
+            $validate_data['end_date'] = $validate_data['date'] . ' ' . $validate_data['time'];
+            unset($validate_data['date']);
+            unset($validate_data['time']);
             Task::where('id', $task_id)
-                ->update($validateData);
+                ->update($validate_data);
             return redirect()->route('task.index', $project_url);
         } else {
-            return $this->taskNotFound;
+            return $this->task_not_found;
         }
     }
 

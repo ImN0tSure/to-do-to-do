@@ -1,7 +1,7 @@
 <x-layout>
     <x-slot:head_components>
         <title>
-            Проект
+            Просмотреть задачу
         </title>
         <link rel="stylesheet" href="{{ asset('css/index.css') }}">
         <link rel="stylesheet" href="{{ asset('css/create/index.css') }}">

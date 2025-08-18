@@ -15,9 +15,10 @@
 
 .task-header {
     display: flex;
+    position: relative;
+    overflow: hidden;
     justify-content: space-between;
     align-items: center;
-    cursor: pointer;
     background: #f06292;
     padding: 20px;
     border-radius: 25px;
@@ -31,6 +32,7 @@
 .task-header .toggle-arrow {
     font-size: 1.2em;
     transition: transform 0.3s ease;
+    cursor: pointer;
 }
 
 .task {
@@ -57,7 +59,8 @@ td {
     background-color: #fce7f0;
     color: #7a2350;
 }
-td>a {
+
+td > a {
     color: #7a2350;
 }
 
@@ -65,11 +68,11 @@ td:nth-child(n+2), th:nth-child(n+2) {
     text-align: center;
 }
 
-tr .status.in_progress{
+tr .status.in_progress {
     color: #d1a12b;
 }
 
-tr .status.complete{
+tr .status.complete {
     color: #00796b;
 }
 
@@ -99,12 +102,12 @@ tr {
 }
 
 tr:hover {
-    cursor:pointer;
+    cursor: pointer;
 }
 
 .task > thead > tr > th:first-child, .task > tbody > tr > td:first-child {
     border-radius: 25px 0 0 25px;
-    width:50%;
+    width: 50%;
 }
 
 .task > thead > tr > th:last-child, .task > tbody > tr > td:last-child {
@@ -187,4 +190,96 @@ tr:hover {
 
 .tab-content.active {
     display: block;
+}
+
+/* Модалка (по умолчанию скрыта) */
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.modal-content {
+    background: #fff0f6;
+    padding: 25px 30px;
+    border-radius: 20px;
+    box-shadow: 0 6px 15px rgba(240, 98, 146, 0.4);
+    width: 350px;
+    max-width: 90%;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    animation: fadeIn 0.3s ease;
+}
+
+.modal-content h2 {
+    margin: 0 0 10px;
+    color: #9e1b56;
+    text-align: center;
+}
+
+.modal-content input,
+.modal-content textarea {
+    padding: 10px 12px;
+    border-radius: 12px;
+    border: 1px solid #d83979;
+    font-family: 'Comic Neue', cursive, Arial, sans-serif;
+    resize: none;
+}
+
+.modal-content textarea {
+    min-height: 70px;
+}
+
+.error-name {
+    display: none;
+    font-size: 13px;
+    color: #e52f2f;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: scale(0.9);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+/* Кнопка редактирования */
+.edit-btn {
+    position: absolute;
+    left: 0;
+    top: 0;
+    transform: translateY(-100%);
+    background: #fff;
+    color: #9e1b56;
+    border: none;
+    padding: 8px 15px;
+    border-radius: 20px 0;
+    font-weight: 600;
+    cursor: pointer;
+    font-family: 'Comic Neue', cursive, Arial, sans-serif;
+    box-shadow: 0 3px 6px rgba(216, 57, 121, 0.6);
+    transition: top 0.3s ease;
+}
+
+.edit-btn:hover {
+    background: #d83979;
+    color: #fff;
+}
+
+/* Выезд кнопки */
+.task-header:hover .edit-btn {
+    top: 35px;
 }
