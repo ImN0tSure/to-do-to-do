@@ -38,16 +38,25 @@ class TasklistController extends Controller
      */
     public function store(Request $request, $project_url)
     {
-        $validatedData = $request->validate([
-            'name' => 'required|max:255',
+        $validatedData = $request->validateWithBag('tasklist', [
+            'name' => 'required|max:255|min:3|unique:tasklists',
             'description' => 'max:255',
         ]);
 
         $project_id = $this->getProjectId($project_url);
         $validatedData['project_id'] = $project_id;
 
-        Tasklist::create($validatedData);
-        return redirect(route('tasklist.index', $project_url));
+        $tasklist = Tasklist::create($validatedData);
+
+        return response()
+            ->json([
+                'data' => [
+                    'tasklist_id' => $tasklist->id
+                ],
+                'name' => $validatedData['name'],
+            ],
+                'success'
+            );
     }
 
     /**

@@ -3,6 +3,7 @@
         <title>
             Проект
         </title>
+        <meta name="csrf-token" content="{{ csrf_token() }}">
         <link rel="stylesheet" href="{{ asset('css/index.css') }}">
         <link rel="stylesheet" href="{{ asset('css/cabinet/index.css') }}">
     </x-slot:head_components>
@@ -47,7 +48,7 @@
                         <a href="#">
                             <button class="btn add-list">Добавить список</button>
                         </a>
-                        <a href="#">
+                        <a href="{{ route('task.create', $current_project->url) }}">
                             <button class="btn add-task">Добавить задачу</button>
                         </a>
                     </div>
@@ -86,60 +87,78 @@
                     <!-- Содержимое задач -->
                     @foreach($tasklists as $tasklist)
                         <div class="task-list">
-                            <div class="task-header" onclick="toggleTasks('taskList{{ $loop->iteration }}')">
+                            <div class="task-header">
+                                <button class="edit-btn">Редактировать</button>
                                 <h2>{{ $tasklist->name }}</h2>
-                                <span class="toggle-arrow">▼</span>
+                                <span class="toggle-arrow"
+                                      onclick="toggleTasks('taskList{{ $loop->iteration }}')">▼</span>
                             </div>
-                            <table class="task" id="taskList{{ $loop->iteration }}" style="display: none;">
-                                <thead>
-                                <tr>
-                                    <th>Задача</th>
-                                    <th>Статус</th>
-                                    <th>Приоритет</th>
-                                    <th>Осталось</th>
-                                </tr>
-                                </thead>
-                                <tbody>
+                            <div class="tasks" id="taskList{{ $loop->iteration }}" style="display: none">
+                                <div class="task-row row-header">
+                                    <div class="task-name">Задача
+                                    </div>
+                                    <div class="task-status">Статус</div>
+                                    <div class="task-priority">Приоритет
+                                    </div>
+                                    <div class="task-left">Осталось</div>
+                                </div>
                                 @foreach($tasklist->tasks as $task)
-                                    <tr>
-                                        <td>{{ $task->name }}</td>
+                                    <a href="{{ route('task.show', [$current_project->url, $task->id]) }}">
+                                        <div class="task task-row row-elem">
+                                            <div class="task-name">{{ $task->name }}</div>
+                                            @switch($task->in_progress)
+                                                @case(1)
+                                                    <div class="task-status in_progress">Актуально</div>
+                                                    @break
+                                                @default
+                                                    <div class="task-status complete">Завершено</div>
+                                            @endswitch
 
-                                        @switch($task->in_progress)
-                                            @case(1)
-                                                <td class="status in_progress">Актуально</td>
-                                                @break
-                                            @default
-                                                <td class="status complete">Завершено</td>
-                                        @endswitch
+                                            @switch($task->priority)
+                                                @case(1)
+                                                    <div class="task-priority high">↑</div>
+                                                    @break
+                                                @case(2)
+                                                    <div class="task-priority middle">—</div>
+                                                    @break
+                                                @default
+                                                    <div class="task-priority low">↓</div>
+                                            @endswitch
 
-                                        @switch($task->priority)
-                                            @case(1)
-                                                <td class="priority high">↑</td>
-                                                @break
-                                            @case(2)
-                                                <td class="priority middle">—</td>
-                                                @break
-                                            @default
-                                                <td class="priority low">↓</td>
-                                        @endswitch
-
-                                        <td class="time-left">
-                                            @php
-                                                echo \App\Services\HowMuchTime::expiresIn($task->end_date);
-                                            @endphp
-                                        </td>
-                                    </tr>
+                                            <div class="task-left">
+                                                @php
+                                                    echo \App\Services\HowMuchTime::expiresIn($task->end_date);
+                                                @endphp
+                                            </div>
+                                        </div>
+                                    </a>
                                 @endforeach
-                                </tbody>
-                            </table>
+
+                            </div>
                         </div>
                     @endforeach
                 </div>
             </section>
+            <!-- Модальное окно -->
+            <div class="modal" style="display:none" id="addListModal">
+                <div class="modal-content">
+                    <h2>Новый список</h2>
+                    <label for="listName">Название списка</label>
+                    <input type="text" id="listName" name="name" placeholder="Введите название">
+                    <div class="error-name" id="errorName">Название обязательно. Минимум 3 символа</div>
+
+                    <label for="listDesc">Описание списка</label>
+                    <textarea id="listDesc" name="description" placeholder="Введите описание"></textarea>
+
+                    <button class="btn" id="confirmAddList">Добавить</button>
+                </div>
+            </div>
         </main>
     </x-slot:main>
 
     <x-slot:scripts>
+
+        <!-- Открытие списков и переключение между вкладками Главная и Задачи -->
         <script>
             function toggleTasks(taskListId) {
                 const taskList = document.getElementById(taskListId);
@@ -169,6 +188,67 @@
                 document.querySelector(`#${tabId}`).classList.add('active');
                 document.querySelector(`.tab[onclick="switchTab('${tabId}')"]`).classList.add('active');
             }
+        </script>
+
+        <!-- Добавление списка задач -->
+        <script>
+
+            const modal = document.getElementById("addListModal");
+            const addListBtn = document.querySelector(".btn.add-list");
+            const confirmBtn = document.getElementById("confirmAddList");
+
+            // Открыть модалку
+            addListBtn.addEventListener("click", () => {
+                modal.style.display = "flex";
+            });
+
+            // Закрыть при клике вне окна
+            window.addEventListener("click", (e) => {
+                if (e.target === modal) {
+                    modal.style.display = "none";
+                }
+            });
+
+            // Обработка кнопки "Добавить"
+
+            document.addEventListener("DOMContentLoaded", function () {
+                document.getElementById('confirmAddList').addEventListener("click", function () {
+                    const name = document.getElementById("listName").value.trim();
+                    const desc = document.getElementById("listDesc").value.trim();
+                    if (name) {
+                        fetch("{{ route('tasklist.store', $current_project) }}", {
+                            method: "POST",
+                            headers: {
+                                "Content-Type": "application/json",
+                                "Accept": "application/json",
+                                "X-CSRF-TOKEN": document.querySelector('meta[name="csrf-token"]').getAttribute("content")
+                            },
+                            body: JSON.stringify({
+                                name: name,
+                                description: desc
+                            })
+                        })
+                            .then(response => response.json())
+                            .then(data => {
+                                if (Object.hasOwn(data, 'errors')) {
+                                    document.getElementById('errorName').style.display = 'block';
+                                } else {
+                                    console.log(data);
+                                    modal.style.display = "none";
+                                    document.getElementById("listName").value = "";
+                                    document.getElementById("listDesc").value = "";
+                                    location.reload();
+                                }
+
+                            })
+                            .catch(error => {
+                                console.error("Ошибка:", error);
+                            });
+                    } else {
+                        alert("Введите название списка!");
+                    }
+                })
+            });
         </script>
     </x-slot:scripts>
 </x-layout>

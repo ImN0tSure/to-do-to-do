@@ -3,9 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\User;
-use App\Models\UserInfo;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 
 class UserController extends Controller
@@ -76,12 +74,11 @@ class UserController extends Controller
             'confirm_new_password' => 'required|same:new_password',
         ]);
 
-        if(Hash::check($validatedData['password'], $user->password)){
+        if (Hash::check($validatedData['password'], $user->password)) {
             $user->password = Hash::make($validatedData['new_password']);
             $user->save();
 
             return redirect(route('user.index'));
-
         } else {
             return [
                 'status' => 'error',
@@ -98,11 +95,13 @@ class UserController extends Controller
         $this->destroy($id);
     }
 
-    public function login() {
+    public function login()
+    {
         return view('login.auth');
     }
 
-    public function auth() {
+    public function auth()
+    {
         return 'authorization function';
     }
 }

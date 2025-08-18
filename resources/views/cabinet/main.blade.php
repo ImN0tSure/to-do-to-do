@@ -35,7 +35,7 @@
                         <h2>Задачи на сегодня</h2>
                         <span class="toggle-arrow">▼</span>
                     </div>
-                    <table class="task" id="taskList1" style="display: table;">
+                    <table class="tasks" id="taskList1" style="display: table;">
                         <thead>
                         <tr>
                             <th>Задача</th>

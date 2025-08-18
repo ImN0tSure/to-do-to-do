@@ -19,7 +19,7 @@ class TaskParticipantsSeeder extends Seeder
             ],
             [
                 'user_id' => 3,
-                'task_id' => 1,
+                'task_id' => 4,
             ],
             [
                 'user_id' => 3,

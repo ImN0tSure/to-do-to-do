@@ -11,6 +11,9 @@ class TaskParticipant extends Model
 {
     use HasFactory;
 
+    protected $fillable = ['task_id', 'user_id', 'status'];
+    public $timestamps = false;
+
     public function task(): BelongsTo
     {
         return $this->belongsTo(Task::class);

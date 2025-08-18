@@ -7,7 +7,7 @@ use App\Models\ProjectParticipant;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 
-class ProjectsController extends Controller
+class ProjectController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -66,6 +66,10 @@ class ProjectsController extends Controller
     {
         $project = Project::where('url', $project_url)->first();
 
+        if (!$project) {
+            return abort(404);
+        }
+
         $data = [
             'projects' => $this->index(),
             'current_project' => $project,
@@ -74,7 +78,6 @@ class ProjectsController extends Controller
         ];
 
         return view('project.show', $data);
-        #dump($data);
     }
 
     /**
