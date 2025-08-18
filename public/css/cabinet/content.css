@@ -246,6 +246,7 @@
 .task-priority {
     font-size: 1.1em;
 }
+
 .task-priority.high {
     color: red;
 }
@@ -263,8 +264,8 @@
     font-size: 1.2em;
 }
 
-.row-header>div {
-    color: #fff!important;
+.row-header > div {
+    color: #fff !important;
 }
 
 .row-elem {

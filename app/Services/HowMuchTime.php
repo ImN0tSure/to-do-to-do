@@ -49,7 +49,7 @@ class HowMuchTime
 
             if ($units == '1') {
                 return $numStr . ' ' . $words[$word][0];
-            } elseif($units == '2' || $units == '3' || $units == '4') {
+            } elseif ($units == '2' || $units == '3' || $units == '4') {
                 return $numStr . ' ' . $words[$word][1];
             } else {
                 return $numStr . ' ' . $words[$word][2];

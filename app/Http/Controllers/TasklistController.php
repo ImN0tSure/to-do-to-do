@@ -51,9 +51,10 @@ class TasklistController extends Controller
         return response()
             ->json([
                 'data' => [
-                    'tasklist_id' => $tasklist->id],
-                    'name' => $validatedData['name'],
+                    'tasklist_id' => $tasklist->id
                 ],
+                'name' => $validatedData['name'],
+            ],
                 'success'
             );
     }

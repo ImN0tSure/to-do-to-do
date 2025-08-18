@@ -31,7 +31,6 @@ class CabinetController extends Controller
         return Task::whereIn('id', $tasks_id)
             ->orderBy('end_date', 'desc')
             ->with(['project:url'])->get();
-
         #return Task::forToday($tasks_id, 'in_progress', 'desc');
     }
 
