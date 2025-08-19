@@ -18,7 +18,10 @@ return new class extends Migration {
             $table->timestamp('end_date');
             $table->integer('priority');
             $table->boolean('in_progress')->default(true);
-            $table->foreignId('tasklist_id')->constrained('tasklists');
+            $table->foreignId('tasklist_id')
+                ->references('id')
+                ->on('tasklists')
+                ->onDelete('cascade');
         });
     }
 

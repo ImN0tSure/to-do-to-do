@@ -12,8 +12,14 @@ return new class extends Migration {
     {
         Schema::create('task_participants', function (Blueprint $table) {
             $table->id()->autoIncrement();
-            $table->integer('task_id')->unsigned();
-            $table->integer('user_id')->unsigned();
+            $table->foreignId('task_id')
+                ->references('id')
+                ->on('tasks')
+                ->onDelete('cascade');
+            $table->foreignId('user_id')
+                ->references('id')
+                ->on('users')
+                ->onDelete('cascade');
             $table->integer('status')->nullable()->default(0);
         });
     }
