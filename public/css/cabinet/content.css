@@ -76,6 +76,13 @@
     background-color: #d83979;
 }
 
+.btn.delete-list {
+    max-width: 53%;
+    background: #d13737;
+    align-self: flex-end;
+    margin-top: 20px;
+}
+
 .tab {
     padding: 10px 20px;
     cursor: pointer;

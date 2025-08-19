@@ -33,54 +33,52 @@
                 <div class="task-list">
                     <div class="task-header" onclick="toggleTasks('taskList1')">
                         <h2>Задачи на сегодня</h2>
-                        <span class="toggle-arrow">▼</span>
+                        <span class="toggle-arrow">▲</span>
                     </div>
-                    <table class="tasks" id="taskList1" style="display: table;">
-                        <thead>
-                        <tr>
-                            <th>Задача</th>
-                            <th>Статус</th>
-                            <th>Приоритет</th>
-                            <th>Осталось</th>
-                        </tr>
-                        </thead>
-                        <tbody>
-                        @foreach ($tasks as $task)
-                            <tr>
-                                <td>
-                                    <a href="{{ route('task.show', [$task->project->url, $task->id]) }}">
-                                        {{ $task->name }}
-                                    </a>
-                                </td>
+                    <div class="tasks" id="taskList1" style="display: table;">
+                        <div class="task-row row-header">
+                            <div class="task-name">Задача
+                            </div>
+                            <div class="task-status">Статус</div>
+                            <div class="task-priority">Приоритет
+                            </div>
+                            <div class="task-left">Осталось</div>
+                        </div>
 
-                                @switch($task->in_progress)
-                                    @case(1)
-                                        <td class="status in_progress">Актуально</td>
-                                        @break
-                                    @default
-                                        <td class="status complete">Завершено</td>
-                                @endswitch
+                        @foreach($tasks as $task)
+                            <a href="{{ route('task.show', [$task->project->url, $task->id]) }}">
+                                <div class="task task-row row-elem">
+                                    <div class="task-name">{{ $task->name }}</div>
+                                    @switch($task->in_progress)
+                                        @case(1)
+                                            <div class="task-status in_progress">Актуально</div>
+                                            @break
+                                        @default
+                                            <div class="task-status complete">Завершено</div>
+                                    @endswitch
 
-                                @switch($task->priority)
-                                    @case(1)
-                                        <td class="priority high">↑</td>
-                                        @break
-                                    @case(2)
-                                        <td class="priority middle">—</td>
-                                        @break
-                                    @default
-                                        <td class="priority low">↓</td>
-                                @endswitch
+                                    @switch($task->priority)
+                                        @case(1)
+                                            <div class="task-priority high">↑</div>
+                                            @break
+                                        @case(2)
+                                            <div class="task-priority middle">—</div>
+                                            @break
+                                        @default
+                                            <div class="task-priority low">↓</div>
+                                    @endswitch
 
-                                <td class="time-left">
-                                    @php
-                                        echo \App\Services\HowMuchTime::expiresIn($task->end_date);
-                                    @endphp
-                                </td>
-                            </tr>
+                                    <div class="task-left">
+                                        @php
+                                            echo \App\Services\HowMuchTime::expiresIn($task->end_date);
+                                        @endphp
+                                    </div>
+                                </div>
+                            </a>
                         @endforeach
-                        </tbody>
-                    </table>
+
+                    </div>
+
                 </div>
             </section>
         </main>

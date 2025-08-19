@@ -88,8 +88,12 @@
                     @foreach($tasklists as $tasklist)
                         <div class="task-list">
                             <div class="task-header">
-                                <button class="edit-btn">Редактировать</button>
-                                <h2>{{ $tasklist->name }}</h2>
+                                <button
+                                        class="edit-btn"
+                                        onclick="editTasklist('{{ $tasklist->id }}')"
+                                >Редактировать
+                                </button>
+                                <h2 id="tasklist{{ $tasklist->id }}Header">{{ $tasklist->name }}</h2>
                                 <span class="toggle-arrow"
                                       onclick="toggleTasks('taskList{{ $loop->iteration }}')">▼</span>
                             </div>
@@ -139,7 +143,7 @@
                     @endforeach
                 </div>
             </section>
-            <!-- Модальное окно -->
+            <!-- Модальное окно создания списка-->
             <div class="modal" style="display:none" id="addListModal">
                 <div class="modal-content">
                     <h2>Новый список</h2>
@@ -151,6 +155,19 @@
                     <textarea id="listDesc" name="description" placeholder="Введите описание"></textarea>
 
                     <button class="btn" id="confirmAddList">Добавить</button>
+                </div>
+            </div>
+            <!-- Модальное окно изменения списка-->
+            <div class="modal" style="display:none" id="editListModal">
+                <div class="modal-content">
+                    <h2>Изменить название списка</h2>
+                    <label for="newlistName">Название списка</label>
+                    <input type="text" id="newlistName" name="newName" placeholder="Введите название">
+                    <input type="text" id="oldlistName" name="oldName" hidden>
+                    <div class="error-name" id="editErrorName">Название обязательно. Минимум 3 символа</div>
+
+                    <button class="btn" id="confirmEditList">Сохранить</button>
+                    <button class="btn delete-list" id="deleteList">X Удалить список</button>
                 </div>
             </div>
         </main>
@@ -193,26 +210,26 @@
         <!-- Добавление списка задач -->
         <script>
 
-            const modal = document.getElementById("addListModal");
+            const addModal = document.getElementById("addListModal");
             const addListBtn = document.querySelector(".btn.add-list");
             const confirmBtn = document.getElementById("confirmAddList");
 
             // Открыть модалку
             addListBtn.addEventListener("click", () => {
-                modal.style.display = "flex";
+                addModal.style.display = "flex";
             });
 
             // Закрыть при клике вне окна
             window.addEventListener("click", (e) => {
-                if (e.target === modal) {
-                    modal.style.display = "none";
+                if (e.target === addModal) {
+                    addModal.style.display = "none";
                 }
             });
 
-            // Обработка кнопки "Добавить"
+            // Обработка кнопки "Добавить Задачу"
 
             document.addEventListener("DOMContentLoaded", function () {
-                document.getElementById('confirmAddList').addEventListener("click", function () {
+                confirmBtn.addEventListener("click", function () {
                     const name = document.getElementById("listName").value.trim();
                     const desc = document.getElementById("listDesc").value.trim();
                     if (name) {
@@ -221,7 +238,9 @@
                             headers: {
                                 "Content-Type": "application/json",
                                 "Accept": "application/json",
-                                "X-CSRF-TOKEN": document.querySelector('meta[name="csrf-token"]').getAttribute("content")
+                                "X-CSRF-TOKEN": document
+                                    .querySelector('meta[name="csrf-token"]')
+                                    .getAttribute("content")
                             },
                             body: JSON.stringify({
                                 name: name,
@@ -233,8 +252,7 @@
                                 if (Object.hasOwn(data, 'errors')) {
                                     document.getElementById('errorName').style.display = 'block';
                                 } else {
-                                    console.log(data);
-                                    modal.style.display = "none";
+                                    addModal.style.display = "none";
                                     document.getElementById("listName").value = "";
                                     document.getElementById("listDesc").value = "";
                                     location.reload();
@@ -249,6 +267,77 @@
                     }
                 })
             });
+        </script>
+
+        <!-- Редактирование списка задач -->
+        <script>
+
+            const editModal = document.getElementById("editListModal");
+            const confirmAddBtn = document.getElementById("confirmEditList");
+            const routeTpl = '{{ route('tasklist.update', [$current_project, '#tasklistId#']) }}';
+            const newListName = document.getElementById("newlistName");
+            const oldListName = document.getElementById('oldlistName');
+
+            let route;
+            let tasklistHeader;
+
+            // Закрыть при клике вне окна
+            window.addEventListener("click", (e) => {
+                if (e.target === editModal) {
+                    editModal.style.display = "none";
+                    newListName.setAttribute('value', '');
+                    newListName.value = '';
+                }
+            });
+
+            // Открыть и заполнить модалку
+            function editTasklist(tasklistId) {
+
+                route = routeTpl.replace('#tasklistId#', tasklistId);
+                tasklistHeader = document.getElementById('tasklist' + tasklistId + 'Header');
+                let currentListName = tasklistHeader.textContent;
+
+                newListName.setAttribute('value', currentListName);
+                newListName.value = currentListName;
+                oldListName.setAttribute('value', currentListName);
+
+                editModal.style.display = "flex";
+            }
+
+            // Обработать кнопку "Сохранить"
+            confirmAddBtn.addEventListener("click", function () {
+                if (newListName.value === oldListName.value) {
+                    editModal.style.display = "none";
+                } else {
+                    fetch(route, {
+                        method: 'PUT',
+                        headers: {
+                            "Content-Type": "application/json",
+                            "Accept": "application/json",
+                            "X-CSRF-TOKEN": document
+                                .querySelector('meta[name="csrf-token"]')
+                                .getAttribute("content")
+                        },
+                        body: JSON.stringify({
+                            'name': newListName.value,
+                            'oldName': oldListName.value,
+                        }),
+                    })
+                        .then(response => response.json())
+                        .then(data => {
+                            if (Object.hasOwn(data, 'errors')) {
+                                document.getElementById('editErrorName').style.display = 'block';
+                            } else {
+                                tasklistHeader.innerHTML = data.data.newName;
+                                editModal.style.display = "none";
+                            }
+
+                        })
+                        .catch(error => {
+                            console.error("Ошибка:", error);
+                        });
+                }
+            })
         </script>
     </x-slot:scripts>
 </x-layout>
