@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\Relations\HasOneThrough;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
@@ -26,6 +27,11 @@ class Task extends Model
             ->whereIn("id", $tasks_id)
             ->orderBy($order_by, $order_direction)
             ->get();
+    }
+
+    public function taskParticipantRecord(): HasOne
+    {
+        return $this->hasOne(TaskParticipant::class);
     }
 
     public function executor(): HasOneThrough

@@ -341,6 +341,41 @@
             })
 
             //Обработать кнопку "Х Удалить список"
+            deleteListBtn.addEventListener("click", function () {
+
+                let answer = confirm(
+                    'Вы уверены, что хотите удалить список со всеми задачами?' +
+                    ' Это действие необратимо.'
+                )
+
+                if (answer) {
+                    fetch(route, {
+                        method: 'DELETE',
+                        headers: {
+                            "Content-Type": "application/json",
+                            "Accept": "application/json",
+                            "X-CSRF-TOKEN": document
+                                .querySelector('meta[name="csrf-token"]')
+                                .getAttribute("content")
+                        },
+                    })
+                        .then(response => response.json())
+                        .then(data => {
+                            if (Object.hasOwn(data, 'errors')) {
+                                console.log(data);
+                            } else {
+                                tasklistHeader.parentNode.parentNode.remove();
+                                editModal.style.display = "none";
+                            }
+                        })
+                        .catch(error => {
+                            console.error("Ошибка:", error);
+                        });
+                } else {
+                    editModal.style.display = "none";
+                }
+
+            })
 
         </script>
     </x-slot:scripts>
