@@ -269,11 +269,12 @@
             });
         </script>
 
-        <!-- Редактирование списка задач -->
+        <!-- Редактирование списка задач и его удаление -->
         <script>
 
             const editModal = document.getElementById("editListModal");
             const confirmAddBtn = document.getElementById("confirmEditList");
+            const deleteListBtn = document.getElementById('deleteList');
             const routeTpl = '{{ route('tasklist.update', [$current_project, '#tasklistId#']) }}';
             const newListName = document.getElementById("newlistName");
             const oldListName = document.getElementById('oldlistName');
@@ -338,6 +339,9 @@
                         });
                 }
             })
+
+            //Обработать кнопку "Х Удалить список"
+
         </script>
     </x-slot:scripts>
 </x-layout>
