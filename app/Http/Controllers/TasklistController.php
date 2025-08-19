@@ -5,10 +5,11 @@ namespace App\Http\Controllers;
 use App\Models\Project;
 use App\Models\Tasklist;
 use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
 
 class TasklistController extends Controller
 {
-    protected $tasklistNotFound = [
+    protected $task_list_not_found = [
         'status' => 'error',
         'message' => 'Tasklist not found',
     ];
@@ -38,25 +39,23 @@ class TasklistController extends Controller
      */
     public function store(Request $request, $project_url)
     {
-        $validatedData = $request->validateWithBag('tasklist', [
-            'name' => 'required|max:255|min:3|unique:tasklists',
+        $validate_data = $request->validateWithBag('tasklist', [
+            'name' => 'required|max:255|min:3',
             'description' => 'max:255',
         ]);
 
         $project_id = $this->getProjectId($project_url);
-        $validatedData['project_id'] = $project_id;
+        $validate_data['project_id'] = $project_id;
 
-        $tasklist = Tasklist::create($validatedData);
+        $tasklist = Tasklist::create($validate_data);
 
         return response()
             ->json([
                 'data' => [
                     'tasklist_id' => $tasklist->id
                 ],
-                'name' => $validatedData['name'],
-            ],
-                'success'
-            );
+                'name' => $validate_data['name'],
+            ]);
     }
 
     /**
@@ -69,7 +68,7 @@ class TasklistController extends Controller
             ->find($tasklist_id);
 
         if (!$this->findTasklist($tasklist)) {
-            return $this->tasklistNotFound;
+            return $this->task_list_not_found;
         }
 
         return [
@@ -85,7 +84,7 @@ class TasklistController extends Controller
         $tasklist = Tasklist::where('project_id', $this->getProjectId($project_url))->find($tasklist_id);
 
         if (!$this->findTasklist($tasklist)) {
-            return $this->tasklistNotFound;
+            return $this->task_list_not_found;
         }
         $data = [
             'project_url' => $project_url,
@@ -100,16 +99,27 @@ class TasklistController extends Controller
      */
     public function update(Request $request, string $project_url, string $tasklist_id)
     {
-        $validatedData = $request->validate([
-            'name' => 'required|max:255',
-            'description' => 'max:255',
+        $validate_data = $request->validateWithBag('tasklist_update', [
+            'name' => 'required|max:255|min:3',
+            'oldName' => [
+                'required',
+                'max:255',
+                'min:3',
+                Rule::exists('tasklists', 'name')
+                    ->where('id', $tasklist_id)
+            ],
         ]);
-
+        unset($validate_data['oldName']);
         Tasklist::where('id', $tasklist_id)
-            ->where('project_id', $this->getProjectId($project_url))
-            ->update($validatedData);
+            ->update($validate_data);
 
-        redirect(route('tasklist.index', $project_url));
+        return response()
+            ->json([
+                'data' => [
+                    'newName' => $validate_data['name'],
+                ],
+                'status' => 'success',
+            ]);
     }
 
     /**

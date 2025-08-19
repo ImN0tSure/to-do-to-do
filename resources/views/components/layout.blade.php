@@ -20,6 +20,8 @@
 @isset($scripts)
     {{ $scripts }}
 @endisset
+
+<!-- Часы вверху страницы -->
 <script>
     function updateClock() {
         const clockDiv = document.querySelector('.clock');
