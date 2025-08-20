@@ -12,6 +12,7 @@
             <a href="{{ route('cabinet') }}">Главная</a>
             <a href="#">Уведомления</a>
             <a href="#">Профиль</a>
+            <a href="{{ route('logout') }}">Выйти</a>
         </nav>
     </x-slot:nav>
 

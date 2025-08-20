@@ -13,6 +13,7 @@
             <a href="{{ route('cabinet') }}">Главная</a>
             <a href="#">Уведомления</a>
             <a href="#">Профиль</a>
+            <a href="{{ route('logout') }}">Выйти</a>
         </nav>
     </x-slot:nav>
 
@@ -89,8 +90,8 @@
                         <div class="task-list">
                             <div class="task-header">
                                 <button
-                                        class="edit-btn"
-                                        onclick="editTasklist('{{ $tasklist->id }}')"
+                                    class="edit-btn"
+                                    onclick="editTasklist('{{ $tasklist->id }}')"
                                 >Редактировать
                                 </button>
                                 <h2 id="tasklist{{ $tasklist->id }}Header">{{ $tasklist->name }}</h2>

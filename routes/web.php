@@ -6,6 +6,7 @@ use App\Http\Controllers\TaskController;
 use App\Http\Controllers\TasklistController;
 use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\AuthController;
 
 /*
 |--------------------------------------------------------------------------
@@ -18,20 +19,22 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::get('/', function () {
-    return view('main');
-})->name('main');
-//Route::group(['prefix' => 'project'], function () {
-//    Route::resource('', ProjectController::class);
-//    Route::resource('{project}/tasklist', TasklistController::class);
-//    Route::resource('{project}/task', TaskController::class);
-//});
-Route::resource('project', ProjectController::class);
-Route::resource('project/{project}/tasklist', TasklistController::class);
-Route::resource('project/{project}/task', TaskController::class);
+Route::group(['middleware' => 'guest'], function () {
+    Route::get('/', function () {
+        return view('main');
+    })->name('main');
+    Route::get('login', [AuthController::class, 'login'])->name('login');
+    Route::post('authorize', [AuthController::class, 'authorizeUser'])->name('authorize');
+});
 
-Route::get('login', [UserController::class, 'login'])->name('login');
-Route::post('auth', [UserController::class, 'auth'])->name('auth');
-Route::resource('user', UserController::class);
 
-Route::get('cabinet', [CabinetController::class, 'index'])->name('cabinet');
+Route::group(['middleware' => 'auth'], function () {
+    Route::get('logout', [AuthController::class, 'logout'])->name('logout');
+    Route::group(['middleware'=> 'project.participant'], function () {
+        Route::resource('project', ProjectController::class);
+        Route::resource('project/{project}/tasklist', TasklistController::class);
+        Route::resource('project/{project}/task', TaskController::class);
+    });
+    Route::get('cabinet', [CabinetController::class, 'index'])->name('cabinet');
+    Route::resource('user', UserController::class);
+});
