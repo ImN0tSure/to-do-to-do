@@ -19,8 +19,11 @@
                 <p>Введите электронную почту и пароль.</p>
                 <form action="{{ route('authorize') }}" method="post">
                     @csrf
-                    <input type="email" class="input-field" placeholder="Электронная почта" required>
-                    <input type="password" class="input-field" placeholder="Пароль" required>
+                    <input name="email" type="email" class="input-field" placeholder="Электронная почта" required>
+                    <input name="password" type="password" class="input-field" placeholder="Пароль" required>
+                    @if ($errors->any())
+                        <div class="error-message">{{ $errors->first('message') }}</div>
+                    @endif
                     <button type="submit" class="btn-primary">Войти</button>
                 </form>
             </section>

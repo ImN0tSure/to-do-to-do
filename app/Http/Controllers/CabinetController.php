@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Task;
 use App\Models\TaskParticipant;
+use Illuminate\Support\Facades\Auth;
 
 class CabinetController extends Controller
 {
@@ -22,7 +23,7 @@ class CabinetController extends Controller
      */
     public function ForTodayList()
     {
-        $user_id = 3;
+        $user_id = Auth::id();
 
         $tasks_id = TaskParticipant::where('user_id', $user_id)
             ->pluck('task_id')
@@ -31,7 +32,6 @@ class CabinetController extends Controller
         return Task::whereIn('id', $tasks_id)
             ->orderBy('end_date', 'desc')
             ->with(['project:url'])->get();
-        #return Task::forToday($tasks_id, 'in_progress', 'desc');
     }
 
     /*

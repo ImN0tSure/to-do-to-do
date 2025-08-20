@@ -227,6 +227,7 @@
     margin-bottom: 10px;
     box-shadow: 1px 1px 4px #d83979;
     font-weight: 600;
+    align-items: center;
 }
 
 .task-name {

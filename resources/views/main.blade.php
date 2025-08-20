@@ -8,7 +8,7 @@
     </x-slot:head_components>
     <x-slot:nav>
         <nav>
-            <a href="{{ route('main') }}">Главная</a>
+            <a href="{{ route('login') }}">Войти</a>
             <a href="{{ route('user.create') }}">Зарегистрироваться</a>
         </nav>
     </x-slot:nav>

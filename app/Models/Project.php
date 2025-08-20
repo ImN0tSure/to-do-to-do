@@ -50,6 +50,11 @@ class Project extends Model
         return $this->hasManyThrough(Task::class, Tasklist::class);
     }
 
+    public function participantRecords(): HasMany
+    {
+        return $this->hasMany(ProjectParticipant::class);
+    }
+
     public function participants(): HasManyThrough
     {
         return $this->hasManyThrough(

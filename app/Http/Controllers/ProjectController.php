@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Project;
 use App\Models\ProjectParticipant;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
 
 class ProjectController extends Controller
@@ -14,7 +15,7 @@ class ProjectController extends Controller
      */
     public static function index()
     {
-        $user_id = 3;
+        $user_id = Auth::id();
 
         $projects_id = ProjectParticipant::where('user_id', $user_id)
             ->pluck('project_id')
@@ -39,7 +40,6 @@ class ProjectController extends Controller
         $validData = $request->validate([
             'name' => 'required',
             'description' => 'required | max:255',
-            #'end_date' => 'required | timestamp | after:yesterday',
             'end_date' => 'max:255',
         ]);
 
@@ -50,7 +50,7 @@ class ProjectController extends Controller
         $validData['begin_date'] = date('Y-m-d H:i:s');
 
         $participate = [
-            'user_id' => 3, // Поменять на подтягивающийся из сессии
+            'user_id' => Auth::id(), // Поменять на подтягивающийся из сессии
             'project_id' => Project::createProject($validData),
             'status' => 1,
         ];

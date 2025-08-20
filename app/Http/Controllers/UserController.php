@@ -94,14 +94,4 @@ class UserController extends Controller
     {
         $this->destroy($id);
     }
-
-    public function login()
-    {
-        return view('login.auth');
-    }
-
-    public function auth()
-    {
-        return 'authorization function';
-    }
 }
