@@ -17,7 +17,7 @@ return new class extends Migration {
             $table->string('name');
             $table->string('patronymic')->nullable();
             $table->string('avatar_img');
-            $table->string('nickname')->nullable()->unique();
+            $table->text('about')->nullable();
             $table->string('phone')->nullable();
             $table->string('contact_email')->nullable();
         });

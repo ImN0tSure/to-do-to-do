@@ -45,6 +45,21 @@
     background: transparent;
 }
 
+.full-name {
+    display: flex;
+    justify-content: space-between;
+    gap: 20px;
+}
+
+.full-name>div {
+    flex-grow: 1;
+}
+
+.contact-info {
+    display: flex;
+    gap: 20px;
+}
+
 .profile-edit textarea {
     resize: vertical;
     height: 150px;
@@ -56,16 +71,21 @@
 }
 
 .profile-edit .avatar-preview {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.avatar-placeholder {
     width: 150px;
     height: 150px;
     border-radius: 50%;
-    margin-bottom: 20px;
-    object-fit: cover;
+    overflow: hidden;
     border: 3px solid #f06292;
-    margin-right: 20px;
+    margin-bottom: 10px;
 }
 
-.avatar-block, .profile-edit label {
+.avatar-wrap, .profile-edit label {
     text-align: left;
 }
 

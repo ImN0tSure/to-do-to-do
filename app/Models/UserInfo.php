@@ -10,7 +10,15 @@ class UserInfo extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['user_id', 'surname', 'name', 'patronymic', 'avatar_img', 'nickname', 'phone'];
+    protected $fillable = [
+        'user_id',
+        'surname',
+        'name',
+        'patronymic',
+        'avatar_img',
+        'phone',
+        'contact_email'
+    ];
     public $timestamps = false;
 
     public function user(): BelongsTo
