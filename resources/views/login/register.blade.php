@@ -17,11 +17,33 @@
             <section class="hello">
                 <h1>Регистрация</h1>
                 <p>Заполните форму для создания аккаунта.</p>
-                <form action="{{ route('user.store') }}" method="post">
-                    <input type="text" class="input-field" placeholder="Имя" required>
-                    <input type="email" class="input-field" placeholder="Электронная почта" required>
-                    <input type="password" class="input-field" placeholder="Пароль" required>
-                    <input type="password" class="input-field" placeholder="Подтвердите пароль" required>
+                <form action="{{ route('tmp-save-user') }}" method="post">
+                    @csrf
+                    <div class="input-wrap">
+                        <input type="email" class="input-field" placeholder="Электронная почта" name="email" required>
+                        @error('email')
+                        <div class="error-message">{{ $errors->first('email') }}</div>
+                        @enderror
+                    </div>
+                    <div class="input-wrap">
+                        <input type="password" class="input-field" placeholder="Пароль" name="password" required>
+                        @error('password')
+                        <div class="error-message">{{ $errors->first('password') }}</div>
+                        @enderror
+                    </div>
+                    <div class="input-wrap">
+                        <input
+                            type="password"
+                            class="input-field"
+                            placeholder="Подтвердите пароль"
+                            name="confirm_password"
+                            required
+                        >
+                        @error('confirm_password')
+                        <div class="error-message">{{ $errors->first('confirm_password') }}</div>
+                        @enderror
+                    </div>
+
                     <button type="submit" class="btn-primary">Зарегистрироваться</button>
                 </form>
             </section>

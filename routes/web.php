@@ -2,9 +2,11 @@
 
 use App\Http\Controllers\CabinetController;
 use App\Http\Controllers\ProjectController;
+use App\Http\Controllers\RegistrationController;
 use App\Http\Controllers\TaskController;
 use App\Http\Controllers\TasklistController;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\UserInfoController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 
@@ -25,16 +27,29 @@ Route::group(['middleware' => 'guest'], function () {
     })->name('main');
     Route::get('login', [AuthController::class, 'login'])->name('login');
     Route::post('authorize', [AuthController::class, 'authorizeUser'])->name('authorize');
+    Route::get('registration', [RegistrationController::class, 'registration'])->name('registration');
+    Route::post('tmp-save-user', [RegistrationController::class, 'tmpSaveUser'])->name('tmp-save-user');
+    Route::get('fulfill-profile', [RegistrationController::class, 'fulfillProfile'])
+        ->name('fulfill-profile');
+    Route::post('register-user', [RegistrationController::class, 'registerUser'])->name('register-user');
 });
 
 
 Route::group(['middleware' => 'auth'], function () {
     Route::get('logout', [AuthController::class, 'logout'])->name('logout');
     Route::group(['middleware'=> 'project.participant'], function () {
-        Route::resource('project', ProjectController::class);
+        Route::get('project/create', [ProjectController::class, 'create'])
+            ->withoutMiddleware('project.participant')
+            ->name('project.create');
+        Route::post('project', [ProjectController::class, 'store'])
+            ->withoutMiddleware('project.participant')
+            ->name('project.store');
+        Route::resource('project', ProjectController::class)
+        ->except(['create', 'store']);
         Route::resource('project/{project}/tasklist', TasklistController::class);
         Route::resource('project/{project}/task', TaskController::class);
     });
     Route::get('cabinet', [CabinetController::class, 'index'])->name('cabinet');
     Route::resource('user', UserController::class);
+    Route::resource('user-info', UserInfoController::class);
 });

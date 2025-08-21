@@ -13,7 +13,7 @@ class UserController extends Controller
      */
     public function index()
     {
-        //
+        return redirect('/registration');
     }
 
     /**
@@ -29,16 +29,16 @@ class UserController extends Controller
      */
     public function store(Request $request)
     {
-        $validatedData = $request->validate([
-            'email' => 'required|unique:users|max:255',
-            'password' => 'required|min:6',
+        $validate_data = $request->validate([
+            'email' => 'required|email|unique:users|max:30',
+            'password' => 'required|min:8|max:25',
             'confirm_password' => 'required|same:password',
         ]);
 
-        $validatedData['password'] = Hash::make($validatedData['password']);
-        unset($validatedData['confirm_password']);
+        $validate_data['password'] = Hash::make($validate_data['password']);
+        unset($validate_data['confirm_password']);
 
-        User::create($validatedData);
+        User::create($validate_data);
         return redirect(route('userInfo.create'));
     }
 
@@ -68,14 +68,14 @@ class UserController extends Controller
     {
         $user = User::find($id)->firstOrFail();
 
-        $validatedData = $request->validate([
+        $validate_data = $request->validate([
             'password' => 'required|min:6',
             'new_password' => 'required|min:6',
             'confirm_new_password' => 'required|same:new_password',
         ]);
 
-        if (Hash::check($validatedData['password'], $user->password)) {
-            $user->password = Hash::make($validatedData['new_password']);
+        if (Hash::check($validate_data['password'], $user->password)) {
+            $user->password = Hash::make($validate_data['new_password']);
             $user->save();
 
             return redirect(route('user.index'));

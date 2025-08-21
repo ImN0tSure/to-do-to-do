@@ -9,7 +9,7 @@
     <x-slot:nav>
         <nav>
             <a href="{{ route('main') }}">Главная</a>
-            <a href="{{ route('user.create') }}">Зарегистрироваться</a>
+            <a href="{{ route('registration') }}">Зарегистрироваться</a>
         </nav>
     </x-slot:nav>
     <x-slot:main>
