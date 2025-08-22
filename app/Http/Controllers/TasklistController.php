@@ -3,9 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Project;
-use App\Models\Task;
 use App\Models\Tasklist;
-use App\Models\TaskParticipant;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 
@@ -129,7 +127,6 @@ class TasklistController extends Controller
      */
     public function destroy(string $project_url, string $tasklist_id)
     {
-
         $tasklist = Tasklist::where('project_id', $this->getProjectId($project_url))
             ->where('id', $tasklist_id)
             ->with(['tasks.taskParticipantRecord'])

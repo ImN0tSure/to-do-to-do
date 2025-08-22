@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\UserInfo;
+use App\Services\UserInfoValidator;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -63,30 +64,13 @@ class UserInfoController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        // Переписать с использованием сервиса UserInfoValidator
-        $validate_data = $request->validate([
-            'avatar_img' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048|bail',
-            'surname' => 'required|string|max:20|bail',
-            'name' => 'required|string|max:20|bail',
-            'patronymic' => 'nullable|string|max:20|bail',
-            'phone' => 'nullable|string|max:20|bail',
-            'contact_email' => 'required|email|max:30|bail',
-            'about' => 'nullable|string|max:1500|bail',
-        ], [
-            'avatar_img.mimes' => 'Поддерживаются следующие форматы: jpeg, png, jpg, gif, svg',
-            'avatar_img.max' => 'Максимальный размер 2048 байт',
-            'avatar_img.image' => 'Вставьте картинку',
-            'surname.required' => 'Это поле обзяательно для заполнения',
-            'surname.max' => 'Максимальная длина 20 символов',
-            'name.required' => 'Это поле обзяательно для заполнения',
-            'name.max' => 'Максимальная длина 20 символов',
-            'patronymic.max' => 'Максимальная длина 20 символов',
-            'phone.max' => 'Максимальная длина 20 символов',
-            'contact_email.required' => 'Email для связи обязателен',
-            'contact_email.email' => 'Укажите корректный email',
-            'contact_email.max' => 'Максимальная длина 30 символов',
-            'about.max' => 'Максимальная длина 1500 символов',
-        ]);
+        $validate = UserInfoValidator::check($request->all());
+
+        if ($validate->fails()) {
+            return redirect()->back()->withErrors($validate);
+        }
+
+        $valid_data = $validate->validated();
 
         if ($request->hasFile('avatar_img')) {
             $file = $request->file('avatar_img');
@@ -94,10 +78,10 @@ class UserInfoController extends Controller
             $file->move(public_path('img/avatars/'), $file_name);
             $path = '/img/avatars/' . $file_name;
 
-            $validate_data['avatar_img'] = $path;
+            $valid_data['avatar_img'] = $path;
         }
 
-        UserInfo::where('user_id', Auth::id())->update($validate_data);
+        UserInfo::where('user_id', Auth::id())->update($valid_data);
 
         return redirect()->route('cabinet');
     }

@@ -36,7 +36,7 @@
                         <label for="end">Дата окончания</label>
                         <input type="date" id="end" name="end_date">
                     </div>
-                    <button type="submit" class="save-button">Создать проект</button>
+                    <button type="submit" class="button save-button">Создать проект</button>
                 </form>
             </section>
         </main>

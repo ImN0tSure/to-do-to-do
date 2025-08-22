@@ -70,8 +70,12 @@
     outline: none;
 }
 
-.save-button {
-    background: #f06292;
+.button-wrapper {
+    display: flex;
+    justify-content: space-between;
+}
+
+.button {
     color: white;
     font-size: 1.2em;
     padding: 12px 25px;
@@ -80,6 +84,14 @@
     transition: background 0.3s ease;
     margin-top: 20px;
     border: none;
+}
+
+.save-button {
+    background: #f06292;
+}
+
+.delete-button {
+    background: #dd1818;
 }
 
 .save-button:hover {
