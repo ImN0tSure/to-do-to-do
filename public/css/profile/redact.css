@@ -51,7 +51,7 @@
     gap: 20px;
 }
 
-.full-name>div {
+.full-name > div {
     flex-grow: 1;
 }
 

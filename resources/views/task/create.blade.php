@@ -115,7 +115,7 @@
                     </div>
 
                     <!-- Кнопка сохранения -->
-                    <button type="submit" class="save-button">Сохранить</button>
+                    <button type="submit" class="button save-button">Сохранить</button>
                 </form>
             </section>
         </main>

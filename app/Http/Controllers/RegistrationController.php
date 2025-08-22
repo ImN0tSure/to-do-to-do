@@ -59,6 +59,8 @@ class RegistrationController extends Controller
             return redirect()->back()->withErrors($validate);
         }
 
+        $valid_data = $validate->validated();
+
         if ($request->hasFile('avatar_img')) {
             $file = $request->file('avatar_img');
             $file_name = 'avatar_' . time() . '.' . $file->getClientOriginalExtension();
@@ -68,21 +70,17 @@ class RegistrationController extends Controller
             $path = '/img/avatars/to-do.png';
         }
 
+        $valid_data['avatar_img'] = $path;
+
         $user = User::create([
             'email' => $register_data['email'],
             'password' => $register_data['password'],
         ]);
 
-        UserInfo::create([
-            'user_id' => $user->id,
-            'surname' => $request->get('surname'),
-            'name' => $request->get('name'),
-            'patronymic' => $request->get('patronymic'),
-            'avatar_img' => $path,
-            'about' => $request->get('about'),
-            'phone' => $request->get('phone'),
-            'contact_email' => $request->get('contact_email'),
-        ]);
+        $valid_data['user_id'] = $user->id;
+
+        UserInfo::create($valid_data);
+
 
         Auth::login($user);
 

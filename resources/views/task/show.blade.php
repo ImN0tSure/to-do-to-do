@@ -11,7 +11,7 @@
         <nav>
             <a href="{{ route('cabinet') }}">Главная</a>
             <a href="#">Уведомления</a>
-            <a href="#">Профиль</a>
+            <a href="{{ route('user-info.edit', auth()->id()) }}">Профиль</a>
             <a href="{{ route('logout') }}">Выйти</a>
         </nav>
     </x-slot:nav>
@@ -20,7 +20,7 @@
         <main class="create">
             <section class="task-create">
                 <h2>Задача</h2>
-                <form action="{{ route('task.update', [$project_url, $task->id]) }}" method="POST">
+                <form id="taskEditForm" action="{{ route('task.update', [$project_url, $task->id]) }}" method="POST">
                     @csrf
                     @method('put')
                     <!-- Поле для заголовка задачи -->
@@ -176,15 +176,35 @@
                         <div class="error-message">Такого статуса не существует.</div>
                         @enderror
                     </select>
-
-                    <!-- Кнопка сохранения -->
-                    <button type="submit" class="save-button">Сохранить</button>
                 </form>
+
+                <!-- Кнопки сохранения и удаления -->
+                <div class="button-wrapper">
+                    <button type="submit" form="taskEditForm" class="button save-button">Сохранить</button>
+                    <form action="{{ route('task.destroy', [$project_url, $task->id]) }}" method="POST">
+                        @csrf
+                        @method('DELETE')
+                        <button
+                            name="delete"
+                            class="button delete-button"
+                        >
+                            Х Удалить задачу
+                        </button>
+                    </form>
+
+                </div>
             </section>
         </main>
     </x-slot:main>
 
     <x-slot:scripts>
-
+        <script>
+            const deleteButton = document.querySelector('.delete-button');
+            deleteButton.addEventListener('click', function (event) {
+                if (!confirm("Вы уверены, что хотите удалить задачу?")) {
+                    event.preventDefault();
+                }
+            });
+        </script>
     </x-slot:scripts>
 </x-layout>

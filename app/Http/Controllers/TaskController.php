@@ -218,7 +218,8 @@ class TaskController extends Controller
      */
     public function destroy(string $project_url, $task_id)
     {
-        Task::destroy($task_id);
+        Task::where('id', $task_id)->delete();
+        return redirect()->route('project.show', $project_url);
     }
 
     protected function getProjectId($project_url)

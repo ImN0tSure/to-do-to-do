@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\AuthController;
 use App\Http\Controllers\CabinetController;
 use App\Http\Controllers\ProjectController;
 use App\Http\Controllers\RegistrationController;
@@ -8,7 +9,6 @@ use App\Http\Controllers\TasklistController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\UserInfoController;
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\AuthController;
 
 /*
 |--------------------------------------------------------------------------
@@ -37,7 +37,7 @@ Route::group(['middleware' => 'guest'], function () {
 
 Route::group(['middleware' => 'auth'], function () {
     Route::get('logout', [AuthController::class, 'logout'])->name('logout');
-    Route::group(['middleware'=> 'project.participant'], function () {
+    Route::group(['middleware' => 'project.participant'], function () {
         Route::get('project/create', [ProjectController::class, 'create'])
             ->withoutMiddleware('project.participant')
             ->name('project.create');
@@ -45,7 +45,7 @@ Route::group(['middleware' => 'auth'], function () {
             ->withoutMiddleware('project.participant')
             ->name('project.store');
         Route::resource('project', ProjectController::class)
-        ->except(['create', 'store']);
+            ->except(['create', 'store']);
         Route::resource('project/{project}/tasklist', TasklistController::class);
         Route::resource('project/{project}/task', TaskController::class);
     });

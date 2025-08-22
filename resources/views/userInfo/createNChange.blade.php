@@ -164,7 +164,9 @@
                         <textarea
                             id="about-me"
                             name="about"
-                            placeholder="Расскажите о себе">@auth{{ $user_info->about }}@endauth</textarea>
+                            placeholder="Расскажите о себе">@auth
+                                {{ $user_info->about }}
+                            @endauth</textarea>
                         @error('about')
                         <div class="error-message">{{ $errors->first('about') }}</div>
                         @enderror
