@@ -10,6 +10,10 @@ class CheckParticipant
     {
         $data = Project::where('url', $project_url)->first();
 
+        if (!$data) {
+            return false;
+        }
+
         return $data->participantRecords()->where('user_id', $user_id)->exists();
     }
 

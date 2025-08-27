@@ -19,6 +19,7 @@ class Notification extends Model
         'read_at',
         'deleted_at',
     ];
+    public $timestamps = false;
 
     public function user(): BelongsTo
     {
@@ -29,6 +30,4 @@ class Notification extends Model
     {
         return $this->morphTo();
     }
-
-
 }

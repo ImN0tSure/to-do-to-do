@@ -12,7 +12,7 @@ class UserInfosSeeder extends Seeder
      */
     public function run(): void
     {
-        DB::table('user_infos')->insert([
+        DB::table('user_infos')->insert(values: [
             [
                 'user_id' => 1,
                 'surname' => 'Adminov',
@@ -52,6 +52,16 @@ class UserInfosSeeder extends Seeder
                 'about' => 'I am Tatiana',
                 'phone' => '1111111',
                 'contact_email' => 'cont.tati@ta.com',
+            ],
+            [
+                'user_id' => 5,
+                'surname' => 'Curatorov',
+                'name' => 'Curator',
+                'patronymic' => 'Curatorovich',
+                'avatar_img' => '/img/avatars/to-do.png',
+                'about' => 'I am Curator',
+                'phone' => '6666666',
+                'contact_email' => 'cont.cur@cu.com',
             ],
         ]);
     }

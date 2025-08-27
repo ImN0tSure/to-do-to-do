@@ -8,8 +8,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\Relations\HasOneThrough;
-use Illuminate\Support\Collection;
-use Illuminate\Support\Facades\DB;
+use Illuminate\Database\Eloquent\Relations\MorphMany;
 
 class Task extends Model
 {
@@ -17,17 +16,6 @@ class Task extends Model
 
     protected $fillable = ['name', 'description', 'begin_date', 'end_date', 'priority', 'tasklist_id'];
     public $timestamps = false;
-
-    public static function forToday(
-        array $tasks_id,
-        string $order_by = 'id',
-        string $order_direction = 'asc'
-    ): Collection {
-        return DB::table("tasks")
-            ->whereIn("id", $tasks_id)
-            ->orderBy($order_by, $order_direction)
-            ->get();
-    }
 
     public function taskParticipantRecord(): HasOne
     {
@@ -66,5 +54,35 @@ class Task extends Model
             'tasklist_id',
             'project_id'
         );
+    }
+
+    public function notifications(): morphMany
+    {
+        return $this->morphMany(Notification::class, 'notifiable');
+    }
+
+    public function createDeadlineNotification(string $type)
+    {
+        if ($this->executor) {
+            Notification::create([
+                'user_id' => $this->executor->user_id,
+                'notifiable_type' => 'task_deadline',
+                'notifiable_id' => $this->id,
+                'type' => $type,
+            ]);
+        } else {
+            $curators = $this->project->participantRecords()->where('status', 1)->get();
+
+            $notifications = $curators->map(function ($curator) use ($type) {
+                return [
+                    'user_id' => $curator->user_id,
+                    'notifiable_type' => 'task_deadline',
+                    'notifiable_id' => $this->id,
+                    'type' => $type,
+                ];
+            })->toArray();
+
+            Notification::insert($notifications);
+        }
     }
 }

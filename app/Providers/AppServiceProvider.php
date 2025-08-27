@@ -21,8 +21,8 @@ class AppServiceProvider extends ServiceProvider
     public function boot(): void
     {
         Relation::morphMap([
-            'deadline' => \App\Models\Deadline::class,
             'invitation' => \App\Models\Invitation::class,
+            'task_deadline' => \App\Models\Task::class,
         ]);
     }
 }

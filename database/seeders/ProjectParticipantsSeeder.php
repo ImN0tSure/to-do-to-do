@@ -33,6 +33,11 @@ class ProjectParticipantsSeeder extends Seeder
                 'project_id' => 1,
                 'status' => 2,
             ],
+            [
+                'user_id' => 5,
+                'project_id' => 1,
+                'status' => 1,
+            ],
         ]);
     }
 }

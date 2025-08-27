@@ -14,7 +14,9 @@ return new class extends Migration
         Schema::create('invitations', function (Blueprint $table) {
             $table->id();
             $table->integer('inviter_id');
+            $table->integer('invitee_id');
             $table->string('project_id');
+            $table->boolean('is_accepted')->nullable();
         });
     }
 
