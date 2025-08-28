@@ -6,6 +6,7 @@ use App\Models\Project;
 use App\Models\Task;
 use App\Models\Tasklist;
 use App\Models\TaskParticipant;
+use App\Services\GetProjectId;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 
@@ -44,7 +45,7 @@ class TaskController extends Controller
      */
     public function store(Request $request, $project_url)
     {
-        $project_id = $this->getProjectId($project_url);
+        $project_id = GetProjectId::byUrl($project_url);
 
         $validate_data = $request->validate([
             'name' => 'required|max:255|min:3',
@@ -155,7 +156,7 @@ class TaskController extends Controller
      */
     public function update(Request $request, string $project_url, $task_id)
     {
-        $project_id = $this->getProjectId($project_url);
+        $project_id = GetProjectId::byUrl($project_url);
 
         $validate_data = $request->validate([
             'name' => 'required|max:255|min:3',
@@ -220,11 +221,6 @@ class TaskController extends Controller
     {
         Task::where('id', $task_id)->delete();
         return redirect()->route('project.show', $project_url);
-    }
-
-    protected function getProjectId($project_url)
-    {
-        return Project::where('url', '=', $project_url)->value('id');
     }
 
     protected function tasklistBelongsToProject($project_id, $tasklist_id)

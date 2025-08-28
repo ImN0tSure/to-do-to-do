@@ -46,9 +46,7 @@
                     </div>
 
                     <div class="tabs-buttons">
-                        <a href="#">
-                            <button class="btn add-list">Добавить список</button>
-                        </a>
+                        <button class="btn add-list">Добавить список</button>
                         <a href="{{ route('task.create', $current_project->url) }}">
                             <button class="btn add-task">Добавить задачу</button>
                         </a>
@@ -75,12 +73,17 @@
                                         <div class="participant-photo"
                                              style="width: 50px; height: 50px; background-color: #f06292; border-radius: 50%;"></div>
                                         <div class="participant-info">
-                                            <p><strong>{{ $participant->name }} {{ $participant->surname }}</strong></p>
+                                            <p><strong>{{ $participant->name }}
+                                                    &nbsp;{{ $participant->surname }}</strong></p>
                                         </div>
                                     </div>
                                 </li>
                             @endforeach
                         </ul>
+                    </section>
+                    <!-- Раздел "Дополнительные кнопки -->
+                    <section class="additional-btn">
+                        <button class="btn" onclick="openAddParticipantModal()">Добавить участника</button>
                     </section>
                 </div>
 
@@ -169,6 +172,22 @@
 
                     <button class="btn" id="confirmEditList">Сохранить</button>
                     <button class="btn delete-list" id="deleteList">X Удалить список</button>
+                </div>
+            </div>
+            <!-- Модальное окно добавления участника -->
+            <div class="modal" style="display:none" id="addParticipantModal">
+                <div class="modal-content">
+                    <h2>Добавление участника в проект</h2>
+                    <label for="participantName">Email пользователя</label>
+                    <input type="email" id="participantEmail" name="email" placeholder="Введите email">
+                    <div class="error-name" id="addParticipantError">Текст ошибки</div>
+
+                    <button
+                        class="btn add-participant"
+                        id="addNewParticipant"
+                        onclick="addParticipant()"
+                    >Добавить
+                    </button>
                 </div>
             </div>
         </main>
@@ -283,7 +302,7 @@
             let route;
             let tasklistHeader;
 
-            // Закрыть при клике вне окна
+            // Закрыть при клике вне окна и сбросить поля
             window.addEventListener("click", (e) => {
                 if (e.target === editModal) {
                     editModal.style.display = "none";
@@ -379,5 +398,83 @@
             })
 
         </script>
+
+        <!-- Добавление нового участника -->
+        <script>
+
+            const addParticipantModal = document.getElementById('addParticipantModal');
+            const participantEmailField = document.getElementById('participantEmail');
+            const errorMessageDiv = document.getElementById('addParticipantError');
+
+            // Открыть модалку.
+            function openAddParticipantModal() {
+                addParticipantModal.style.display = "flex";
+            }
+
+            // Очистить и закрыть модалку
+            function clearAndCloseModal() {
+                addParticipantModal.style.display = "none";
+                participantEmailField.value = '';
+                errorMessageDiv.style.display = 'none';
+                errorMessageDiv.innerText = '';
+            }
+
+            // Закрыть модалку при клике вне её
+            window.addEventListener("click", (e) => {
+                if (e.target === addParticipantModal) {
+                    clearAndCloseModal();
+                }
+            });
+
+            // Добавление пользователя
+            function addParticipant() {
+
+                const participantEmail = participantEmailField.value.trim();
+
+                if (participantEmail) {
+                    fetch('{{ route('invite-participant') }}', {
+                        method: 'POST',
+                        headers: {
+                            "Content-Type": "application/json",
+                            "Accept": "application/json",
+                            "X-CSRF-TOKEN": document
+                                .querySelector('meta[name="csrf-token"]')
+                                .getAttribute("content")
+                        },
+                        body: JSON.stringify({
+                            email: participantEmail,
+                            project_url: '{{ $current_project->url }}'
+                        })
+                    })
+                        .then(response => response.json())
+                        .then(data => {
+                            if (Object.hasOwn(data, 'errors')) {
+
+                                let errorMessage;
+                                if (data.errors.project_url) {
+                                    errorMessage = data.errors.project_url[0];
+                                }
+                                else if(data.errors.email) {
+                                    errorMessage = data.errors.email[0];
+                                }
+                                errorMessageDiv.style.display = 'block';
+                                errorMessageDiv.innerText = errorMessage;
+                            } else {
+                                console.log(data);
+                                clearAndCloseModal();
+                                alert('Уведомление успешно отправлено');
+                            }
+
+                        })
+                        .catch(error => {
+                            console.error("Ошибка:", error);
+                        });
+                }
+
+            }
+
+
+        </script>
+
     </x-slot:scripts>
 </x-layout>

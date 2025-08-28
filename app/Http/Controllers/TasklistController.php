@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Project;
 use App\Models\Tasklist;
+use App\Services\GetProjectId;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 
@@ -44,7 +45,7 @@ class TasklistController extends Controller
             'description' => 'max:255',
         ]);
 
-        $project_id = $this->getProjectId($project_url);
+        $project_id = GetProjectId::byUrl($project_url);
         $validate_data['project_id'] = $project_id;
 
         $tasklist = Tasklist::create($validate_data);
@@ -64,7 +65,7 @@ class TasklistController extends Controller
     public function show(string $project_url, string $tasklist_id)
     {
         $tasklist = Tasklist::with('tasks')
-            ->where('project_id', $this->getProjectId($project_url))
+            ->where('project_id', GetProjectId::byUrl($project_url))
             ->find($tasklist_id);
 
         if (!$this->findTasklist($tasklist)) {
@@ -81,7 +82,7 @@ class TasklistController extends Controller
      */
     public function edit(string $project_url, string $tasklist_id)
     {
-        $tasklist = Tasklist::where('project_id', $this->getProjectId($project_url))->find($tasklist_id);
+        $tasklist = Tasklist::where('project_id', GetProjectId::byUrl($project_url))->find($tasklist_id);
 
         if (!$this->findTasklist($tasklist)) {
             return $this->task_list_not_found;
@@ -127,7 +128,7 @@ class TasklistController extends Controller
      */
     public function destroy(string $project_url, string $tasklist_id)
     {
-        $tasklist = Tasklist::where('project_id', $this->getProjectId($project_url))
+        $tasklist = Tasklist::where('project_id', GetProjectId::byUrl($project_url))
             ->where('id', $tasklist_id)
             ->with(['tasks.taskParticipantRecord'])
             ->delete();
@@ -137,13 +138,7 @@ class TasklistController extends Controller
             'tasklist_id' => $tasklist_id,
             'tasklist' => $tasklist,
             'message' => 'Tasklist successfully deleted',
-            #'tasks' => $tasks,
         ]);
-    }
-
-    protected function getProjectId($project_url) //Вынести функцию в сервисы
-    {
-        return Project::where('url', '=', $project_url)->value('id');
     }
 
     protected function findTasklist($tasklist): bool

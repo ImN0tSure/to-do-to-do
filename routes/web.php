@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\CabinetController;
+use App\Http\Controllers\InvitationController;
 use App\Http\Controllers\ProjectController;
 use App\Http\Controllers\RegistrationController;
 use App\Http\Controllers\TaskController;
@@ -26,12 +27,16 @@ Route::group(['middleware' => 'guest'], function () {
         return view('main');
     })->name('main');
     Route::get('login', [AuthController::class, 'login'])->name('login');
-    Route::post('authorize', [AuthController::class, 'authorizeUser'])->name('authorize');
-    Route::get('registration', [RegistrationController::class, 'registration'])->name('registration');
-    Route::post('tmp-save-user', [RegistrationController::class, 'tmpSaveUser'])->name('tmp-save-user');
+    Route::post('authorize', [AuthController::class, 'authorizeUser'])
+        ->name('authorize');
+    Route::get('registration', [RegistrationController::class, 'registration'])
+        ->name('registration');
+    Route::post('tmp-save-user', [RegistrationController::class, 'tmpSaveUser'])
+        ->name('tmp-save-user');
     Route::get('fulfill-profile', [RegistrationController::class, 'fulfillProfile'])
         ->name('fulfill-profile');
-    Route::post('register-user', [RegistrationController::class, 'registerUser'])->name('register-user');
+    Route::post('register-user', [RegistrationController::class, 'registerUser'])
+        ->name('register-user');
 });
 
 
@@ -49,7 +54,10 @@ Route::group(['middleware' => 'auth'], function () {
         Route::resource('project/{project}/tasklist', TasklistController::class);
         Route::resource('project/{project}/task', TaskController::class);
     });
-    Route::get('cabinet', [CabinetController::class, 'index'])->name('cabinet');
+    Route::get('cabinet', [CabinetController::class, 'index'])
+        ->name('cabinet');
     Route::resource('user', UserController::class);
     Route::resource('user-info', UserInfoController::class);
+    Route::post('invite-participant', [InvitationController::class, 'create'])
+        ->name('invite-participant');
 });

@@ -14,4 +14,6 @@ class Invitation extends Model
         'project_id',
         'is_accepted',
     ];
+
+    public $timestamps = false;
 }
