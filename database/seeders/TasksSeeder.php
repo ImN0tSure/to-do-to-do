@@ -69,6 +69,25 @@ class TasksSeeder extends Seeder
                 'in_progress' => true,
                 'tasklist_id' => 1,
             ],
+            [
+                'name' => 'Установить node js',
+                'description' => Str::random(50),
+                'begin_date' => date('Y-m-d H:i', time() - 60 * 60 * 24 * 2),
+                'end_date' => date('Y-m-d H:i', time() + 60 * 60 * 24 * 1),
+                'priority' => 2,
+                'in_progress' => true,
+                'tasklist_id' => 5,
+            ],
+            [
+                'name' => 'Установить view js',
+                'description' => Str::random(50),
+                'begin_date' => date('Y-m-d H:i', time() - 60 * 60 * 24 * 2),
+                'end_date' => date('Y-m-d H:i', time() + 60 * 60 * 24 * 2),
+                'priority' => 2,
+                'in_progress' => true,
+                'tasklist_id' => 4,
+            ],
+
         ]);
     }
 }

@@ -12,7 +12,7 @@ use Illuminate\Support\Facades\Validator;
 
 class InvitationController extends Controller
 {
-    public function create(Request $request)
+    public function create(Request $request): \Illuminate\Http\JsonResponse
     {
         $validation = Validator::make($request->all(), [
             'email' => 'required|email|max:30|exists:users,email|bail',
@@ -65,17 +65,54 @@ class InvitationController extends Controller
 
         return response()->json([
             'status' => 'success',
-            'inviter_id' => Auth::id(),
-            'invitee_id' => $new_participant_id,
-            'project_id' => (integer)$project_id,
         ]);
     }
 
-    public function confirm($user_id, $notification_id)
+    public function accept($notifiable_id): \Illuminate\Http\JsonResponse
     {
+        if ($this->checkInvitation($notifiable_id)) {
+            $this->updateInvitation($notifiable_id, true);
+            return response()->json([
+                'status' => 'success',
+                'message' => 'Приглашение принято.'
+            ]);
+        }
+
+        return response()->json($this->invitationNotFoundResponse());
     }
 
-    public function decline($user_id, $notification_id)
+    public function decline($notifiable_id): \Illuminate\Http\JsonResponse
     {
+        if ($this->checkInvitation($notifiable_id)) {
+            $this->updateInvitation($notifiable_id, false);
+            return response()->json([
+                'status' => 'success',
+                'message' => 'Приглашение отклонено.'
+            ]);
+        }
+
+        return response()->json($this->invitationNotFoundResponse());
+    }
+
+    protected function checkInvitation($notifiable_id): bool
+    {
+        return (bool)Invitation::where([
+            'id' => $notifiable_id,
+            'invitee_id' => Auth::id(),
+            'is_accepted' => null
+        ]);
+    }
+
+    protected function updateInvitation($notifiable_id, bool $is_accepted): void
+    {
+        Invitation::where('id', $notifiable_id)->update(['is_accepted' => $is_accepted]);
+    }
+
+    protected function invitationNotFoundResponse(): array
+    {
+        return [
+            'status' => 'error',
+            'message' => 'Приглашение отсутствует.'
+        ];
     }
 }

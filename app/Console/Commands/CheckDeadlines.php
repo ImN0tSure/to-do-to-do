@@ -31,18 +31,24 @@ class CheckDeadlines extends Command
         Task::where('end_date', '<=', $now->copy()->addHours(48))
             ->where('end_date', '>=', $now->copy()->addHours(24))
             ->whereDoesntHave('notifications', function ($query) {
-                $query->where('type', 'deadline_48h');
+                $query->where([
+                    'event' => 'deadline',
+                    'event_type' => '48'
+                ]);
             })
             ->each(function ($task) {
-                $task->createDeadlineNotification('deadline_48h');
+                $task->createDeadlineNotification('48');
             });
 
         Task::where('end_date', '<=', $now->copy()->addHours(24))
             ->whereDoesntHave('notifications', function ($query) {
-                $query->where('type', 'deadline_24h');
+                $query->where([
+                    'event' => 'deadline',
+                    'event_type' => '24'
+                ]);
             })
             ->each(function ($task) {
-                $task->createDeadlineNotification('deadline_24h');
+                $task->createDeadlineNotification('24');
             });
     }
 

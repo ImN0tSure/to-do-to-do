@@ -29,6 +29,10 @@ class TaskParticipantsSeeder extends Seeder
                 'user_id' => 1,
                 'task_id' => 3,
             ],
+            [
+                'user_id' => 6,
+                'task_id' => 7,
+            ],
         ]);
     }
 }

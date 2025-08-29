@@ -2,6 +2,8 @@
 
 namespace App\Providers;
 
+use App\Models\Invitation;
+use App\Observers\InvitationObserver;
 use Illuminate\Database\Eloquent\Relations\Relation;
 use Illuminate\Support\ServiceProvider;
 
@@ -20,6 +22,8 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        Invitation::observe(InvitationObserver::class);
+
         Relation::morphMap([
             'invitation' => \App\Models\Invitation::class,
             'task_deadline' => \App\Models\Task::class,

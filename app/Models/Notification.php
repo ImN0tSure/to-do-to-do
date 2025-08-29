@@ -15,16 +15,12 @@ class Notification extends Model
         'user_id',
         'notifiable_type',
         'notifiable_id',
-        'type',
+        'event',
+        'event_type',
         'read_at',
         'deleted_at',
     ];
     public $timestamps = false;
-
-    public function user(): BelongsTo
-    {
-        return $this->belongsTo(User::class);
-    }
 
     public function notifiable(): MorphTo
     {

@@ -63,6 +63,16 @@ class UserInfosSeeder extends Seeder
                 'phone' => '6666666',
                 'contact_email' => 'cont.cur@cu.com',
             ],
+            [
+                'user_id' => 6,
+                'surname' => 'Notev',
+                'name' => 'Note',
+                'patronymic' => 'Notevich',
+                'avatar_img' => '/img/avatars/to-do.png',
+                'about' => 'I am Note',
+                'phone' => '6666666',
+                'contact_email' => 'cont.note@no.com',
+            ],
         ]);
     }
 }

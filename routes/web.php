@@ -3,6 +3,7 @@
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\CabinetController;
 use App\Http\Controllers\InvitationController;
+use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\ProjectController;
 use App\Http\Controllers\RegistrationController;
 use App\Http\Controllers\TaskController;
@@ -60,4 +61,6 @@ Route::group(['middleware' => 'auth'], function () {
     Route::resource('user-info', UserInfoController::class);
     Route::post('invite-participant', [InvitationController::class, 'create'])
         ->name('invite-participant');
+    Route::get('notifications', [NotificationController::class, 'index'])
+        ->name('notifications');
 });

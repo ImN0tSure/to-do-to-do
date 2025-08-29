@@ -33,6 +33,10 @@ class UsersSeeder extends Seeder
             [
                 'email' => 'curator@admin.com',
                 'password' => Hash::make('curator123'),
+            ],
+            [
+                'email' => 'note@admin.com',
+                'password' => Hash::make('note123'),
             ]
         ]);
     }

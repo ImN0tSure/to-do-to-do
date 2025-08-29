@@ -16,7 +16,8 @@ return new class extends Migration
             $table->integer('user_id')->unsigned();
             $table->string('notifiable_type'); //Модель, которая используется для доступа к уведомлениям
             $table->string('notifiable_id');
-            $table->string('type'); // Тип уведомления. Пока доступны: deadline_48h, deadline_24h, invitation.
+            $table->string('event'); // Тип уведомления.
+            $table->string('event_type'); // Подтип уведомления.
             $table->dateTime('read_at')->nullable();
             $table->dateTime('deleted_at')->nullable();
         });
