@@ -26,17 +26,15 @@ class InvitationObserver
      */
     public function updated(Invitation $invitation): void
     {
-        if ($invitation->is_accepted !== null) {
-            $event_type = $invitation->is_accepted ? 'accepted' : 'declined';
+        $event_type = $invitation->is_accepted ? 'accepted' : 'declined';
 
-            Notification::create([
-                'user_id' => $invitation->inviter_id,
-                'notifiable_type' => 'invitation',
-                'notifiable_id' => $invitation->id,
-                'event' => 'invitation',
-                'event_type' => $event_type,
-            ]);
-        }
+        Notification::create([
+            'user_id' => $invitation->inviter_id,
+            'notifiable_type' => 'invitation',
+            'notifiable_id' => $invitation->id,
+            'event' => 'invitation',
+            'event_type' => $event_type,
+        ]);
     }
 
     /**

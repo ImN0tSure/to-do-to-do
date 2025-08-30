@@ -61,6 +61,10 @@ Route::group(['middleware' => 'auth'], function () {
     Route::resource('user-info', UserInfoController::class);
     Route::post('invite-participant', [InvitationController::class, 'create'])
         ->name('invite-participant');
+    Route::put('accept-invitation', [InvitationController::class, 'accept'])
+        ->name('accept-invitation');
+    Route::put('decline-invitation', [InvitationController::class, 'decline'])
+        ->name('decline-invitation');
     Route::get('notifications', [NotificationController::class, 'index'])
         ->name('notifications');
 });

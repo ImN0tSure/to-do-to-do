@@ -27,9 +27,16 @@ class Invitation extends Model
             ->select('user_id', 'name', 'surname');
     }
 
+    public function invitee(): BelongsTo
+    {
+        return $this
+            ->belongsTo(UserInfo::class, 'invitee_id', 'user_id')
+            ->select('user_id', 'name', 'surname');
+    }
+
     public function project(): BelongsTo
     {
-        return $this->belongsTo(Project::class)->select('id', 'name');
+        return $this->belongsTo(Project::class)->select('id', 'name', 'url');
     }
 
     public function notifications(): MorphMany

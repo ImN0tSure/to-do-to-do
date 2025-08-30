@@ -8,7 +8,7 @@
     </x-slot:head_components>
     <x-slot:nav>
         <nav>
-            <a href="#">Уведомления</a>
+            <a href="{{ route('notifications') }}">Уведомления</a>
             <a href="{{ route('user-info.edit', auth()->id()) }}">Профиль</a>
             <a href="{{ route('logout') }}">Выйти</a>
         </nav>

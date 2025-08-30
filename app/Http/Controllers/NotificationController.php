@@ -18,15 +18,14 @@ class NotificationController extends Controller
             ->with([
                 'notifiable' => function ($morphTo) {
                     $morphTo->morphWith([
-                        Invitation::class => ['project', 'inviter'],
-                        Task::class => [],
+                        Invitation::class => ['project', 'inviter', 'invitee'],
+                        Task::class => ['project'],
                     ]);
                 }
             ])
             ->get()
             ->groupBy('event');
-//        dump($notifications);
-//        die();
+
         return view('notification.index', $notifications);
     }
 }
