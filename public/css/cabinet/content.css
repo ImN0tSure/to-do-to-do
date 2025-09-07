@@ -42,7 +42,7 @@
     text-align: center;
 }
 
-.tabs-wrapper {
+.tabs-wrap {
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -99,14 +99,33 @@
     color: white;
 }
 
+.project-participants-wrap {
+    display: flex;
+    justify-content: space-around;
+    flex-flow: row wrap;
+    gap: 10px;
+}
+
 .participant {
     display: flex;
     align-items: center;
     margin-bottom: 15px;
+    width: 260px;
 }
 
 .participant-photo {
-    margin-right: 15px;
+    margin-right: 10px;
+    width: 50px;
+    height: 50px;
+    border: 1px solid #f06292;
+    border-radius: 50%;
+    overflow: hidden;
+}
+
+.participant-photo > img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
 }
 
 .participant-info p {
@@ -137,7 +156,6 @@
     width: 100%;
     height: 100%;
     background: rgba(0, 0, 0, 0.5);
-    display: flex;
     align-items: center;
     justify-content: center;
 }
@@ -278,4 +296,9 @@
 
 .row-elem {
     background: #fce7f0;
+}
+
+.additional-btn {
+    display: flex;
+    justify-content: center;
 }
