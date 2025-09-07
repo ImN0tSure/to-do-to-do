@@ -39,7 +39,7 @@
 
             <section class="content">
                 <!-- Вкладки -->
-                <div class="tabs-wrapper">
+                <div class="tabs-wrap">
                     <div class="tabs">
                         <div class="tab" onclick="switchTab('tab1')">Главная</div>
                         <div class="tab active" onclick="switchTab('tab2')">Задачи</div>
@@ -66,20 +66,20 @@
                     <!-- Раздел "Участники проекта" -->
                     <section>
                         <h2>Участники проекта</h2>
-                        <ul>
+                        <div class="project-participants-wrap">
                             @foreach($participants as $participant)
-                                <li>
-                                    <div class="participant">
-                                        <div class="participant-photo"
-                                             style="width: 50px; height: 50px; background-color: #f06292; border-radius: 50%;"></div>
-                                        <div class="participant-info">
-                                            <p><strong>{{ $participant->name }}
-                                                    &nbsp;{{ $participant->surname }}</strong></p>
-                                        </div>
+                                <div class="participant">
+                                    <div class="participant-photo">
+                                        <img src="{{ $participant->avatar_img }}" alt="avatar-img"/>
                                     </div>
-                                </li>
+                                    <div class="participant-info">
+                                        <p>
+                                            <strong>{{ $participant->name }} {{ $participant->surname }}</strong>
+                                        </p>
+                                    </div>
+                                </div>
                             @endforeach
-                        </ul>
+                        </div>
                     </section>
                     <!-- Раздел "Дополнительные кнопки -->
                     <section class="additional-btn">
@@ -453,8 +453,7 @@
                                 let errorMessage;
                                 if (data.errors.project_url) {
                                     errorMessage = data.errors.project_url[0];
-                                }
-                                else if(data.errors.email) {
+                                } else if (data.errors.email) {
                                     errorMessage = data.errors.email[0];
                                 }
                                 errorMessageDiv.style.display = 'block';

@@ -67,4 +67,6 @@ Route::group(['middleware' => 'auth'], function () {
         ->name('decline-invitation');
     Route::get('notifications', [NotificationController::class, 'index'])
         ->name('notifications');
+    Route::delete('notifications/{notification}', [NotificationController::class, 'delete'])
+        ->where('notification', '[0-9]+');
 });

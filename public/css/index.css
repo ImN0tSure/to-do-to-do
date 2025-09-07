@@ -41,6 +41,10 @@ header .logo {
     text-shadow: 1px 1px 3px #d83979;
 }
 
+section {
+    margin-bottom: 20px;
+}
+
 .clock {
     position: absolute;
     top: 50%;

@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Invitation;
 use App\Models\Notification;
 use App\Models\Task;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Support\Facades\Auth;
 
 class NotificationController extends Controller
@@ -27,5 +28,25 @@ class NotificationController extends Controller
             ->groupBy('event');
 
         return view('notification.index', $notifications);
+    }
+
+    public function delete($id): \Illuminate\Http\JsonResponse
+    {
+        try {
+            Notification::where('user_id', Auth::id())->findOrFail($id)->update([
+                'deleted_at' => now()
+            ]);
+
+            return response()->json([
+                'status' => 'success',
+                'message' => 'Уведомление успешно удалено.'
+            ]);
+        } catch (ModelNotFoundException $e) {
+
+            return response()->json([
+                'status' => 'error',
+                'message' => $e->getMessage()
+            ]);
+        }
     }
 }
