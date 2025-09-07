@@ -18,6 +18,7 @@ class TasksSeeder extends Seeder
             [
                 'name' => 'Установить Laravel',
                 'description' => Str::random(50),
+                'executor_id' => 2,
                 'begin_date' => date('Y-m-d H:i', time() - 60 * 60 * 24 * 2),
                 'end_date' => date('Y-m-d H:i', time() - 60 * 60 * 24),
                 'priority' => 2,
@@ -27,6 +28,7 @@ class TasksSeeder extends Seeder
             [
                 'name' => 'Разработать таблицы для БД',
                 'description' => Str::random(50),
+                'executor_id' => 3,
                 'begin_date' => date('Y-m-d H:i', time() - 60 * 60 * 24 * 2),
                 'end_date' => date('Y-m-d H:i', time() + 60 * 60 * 24 * 2),
                 'priority' => 2,
@@ -36,6 +38,7 @@ class TasksSeeder extends Seeder
             [
                 'name' => 'Создать миграции',
                 'description' => Str::random(50),
+                'executor_id' => 1,
                 'begin_date' => date('Y-m-d H:i', time() - 60 * 60 * 24 * 2),
                 'end_date' => date('Y-m-d H:i', time() + 60 * 60 * 24 * 5),
                 'priority' => 1,
@@ -45,6 +48,7 @@ class TasksSeeder extends Seeder
             [
                 'name' => 'Создать сиды',
                 'description' => Str::random(50),
+                'executor_id' => 3,
                 'begin_date' => date('Y-m-d H:i', time() - 60 * 60 * 24 * 2),
                 'end_date' => date('Y-m-d H:i', time() + 60 * 60 * 24 * 5),
                 'priority' => 2,
@@ -54,6 +58,7 @@ class TasksSeeder extends Seeder
             [
                 'name' => 'Разработать модели',
                 'description' => Str::random(50),
+                'executor_id' => null,
                 'begin_date' => date('Y-m-d H:i', time() - 60 * 60 * 24 * 2),
                 'end_date' => date('Y-m-d H:i', time() + 60 * 60 * 24 * 8),
                 'priority' => 2,
@@ -63,6 +68,7 @@ class TasksSeeder extends Seeder
             [
                 'name' => 'Разработать контроллеры',
                 'description' => Str::random(50),
+                'executor_id' => null,
                 'begin_date' => date('Y-m-d H:i', time() - 60 * 60 * 24 * 2),
                 'end_date' => date('Y-m-d H:i', time() + 60 * 60 * 24 * 12),
                 'priority' => 2,
@@ -72,6 +78,7 @@ class TasksSeeder extends Seeder
             [
                 'name' => 'Установить node js',
                 'description' => Str::random(50),
+                'executor_id' => 6,
                 'begin_date' => date('Y-m-d H:i', time() - 60 * 60 * 24 * 2),
                 'end_date' => date('Y-m-d H:i', time() + 60 * 60 * 24 * 1),
                 'priority' => 2,
@@ -81,6 +88,7 @@ class TasksSeeder extends Seeder
             [
                 'name' => 'Установить view js',
                 'description' => Str::random(50),
+                'executor_id' => null,
                 'begin_date' => date('Y-m-d H:i', time() - 60 * 60 * 24 * 2),
                 'end_date' => date('Y-m-d H:i', time() + 60 * 60 * 24 * 2),
                 'priority' => 2,

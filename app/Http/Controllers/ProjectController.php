@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Project;
 use App\Models\ProjectParticipant;
+use App\Services\GetProjectId;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
@@ -95,7 +96,7 @@ class ProjectController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $url)
+    public function update(Request $request, string $url): \Illuminate\Http\RedirectResponse
     {
         $validData = $request->validate([
             'name' => 'required',
@@ -109,9 +110,14 @@ class ProjectController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(string $url)
+    public function destroy(string $url): \Illuminate\Http\RedirectResponse
     {
         Project::where('url', $url)->delete();
         return redirect()->route('index');
+    }
+
+    public function quit(string $url) {
+        $user_id = Auth::id();
+        $project = Project::where('url', $url)->first();
     }
 }

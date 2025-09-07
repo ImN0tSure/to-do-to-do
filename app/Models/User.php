@@ -21,11 +21,6 @@ class User extends Authenticatable
         return $this->hasOne(UserInfo::class);
     }
 
-    public function taskParticipants(): HasMany
-    {
-        return $this->hasMany(TaskParticipant::class);
-    }
-
     public function comments(): HasMany
     {
         return $this->hasMany(Comment::class);

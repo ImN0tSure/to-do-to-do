@@ -9,6 +9,10 @@
     width: 82%;
 }
 
+.section, .exclude-note {
+    margin-bottom: 20px;
+}
+
 .task-list {
     margin-bottom: 20px;
 }
@@ -128,13 +132,42 @@
     object-fit: cover;
 }
 
+.participant-info {
+    position: relative;
+}
+
 .participant-info p {
-    margin: 0;
     color: #7a2350;
+    max-width: 200px;
 }
 
 .participant-info strong {
     font-size: 1.1em;
+}
+
+/* Кнопки добавления, исключения и выхода из проекта. */
+
+.additional-btn, .exclude-btn {
+    display: flex;
+    justify-content: space-evenly;
+}
+
+.exclude {
+    background-color: #dd1818;
+}
+
+.exclude:hover {
+    background-color: #ba1919;
+}
+
+.deleted:before {
+    content: "";
+    position: absolute;
+    top: 50%;
+    width: 100%;
+    height: 2px;
+    background: #3d3a3b;
+    border-radius: 4px;
 }
 
 /* Скрытый контент вкладок */
@@ -296,9 +329,4 @@
 
 .row-elem {
     background: #fce7f0;
-}
-
-.additional-btn {
-    display: flex;
-    justify-content: center;
 }

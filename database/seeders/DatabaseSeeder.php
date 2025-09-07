@@ -24,7 +24,6 @@ class DatabaseSeeder extends Seeder
             ProjectsSeeder::class,
             TasklistSeeder::class,
             TasksSeeder::class,
-            TaskParticipantsSeeder::class,
             ProjectParticipantsSeeder::class,
             CommentsSeeder::class,
         ]);

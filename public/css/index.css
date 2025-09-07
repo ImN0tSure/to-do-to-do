@@ -45,6 +45,10 @@ section {
     margin-bottom: 20px;
 }
 
+.hidden {
+    display: none!important;
+}
+
 .clock {
     position: absolute;
     top: 50%;
