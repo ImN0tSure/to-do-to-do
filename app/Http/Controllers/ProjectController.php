@@ -2,11 +2,12 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Notification;
 use App\Models\Project;
 use App\Models\ProjectParticipant;
-use App\Services\GetProjectId;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 
 class ProjectController extends Controller
@@ -14,7 +15,7 @@ class ProjectController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public static function index()
+    public static function index(): \Illuminate\Support\Collection
     {
         $user_id = Auth::id();
 
@@ -28,7 +29,7 @@ class ProjectController extends Controller
     /**
      * Show the form for creating a new resource.
      */
-    public function create()
+    public function create(): \Illuminate\Contracts\View\Factory|\Illuminate\Foundation\Application|\Illuminate\Contracts\View\View|\Illuminate\Contracts\Foundation\Application
     {
         return view('project.create');
     }
@@ -36,7 +37,7 @@ class ProjectController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(Request $request): \Illuminate\Http\RedirectResponse
     {
         $validData = $request->validate([
             'name' => 'required',
@@ -63,7 +64,7 @@ class ProjectController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show($project_url)
+    public function show($project_url): \Illuminate\Contracts\View\Factory|\Illuminate\Foundation\Application|\Illuminate\Contracts\View\View|\Illuminate\Contracts\Foundation\Application
     {
         $project = Project::where('url', $project_url)->first();
 
@@ -84,7 +85,7 @@ class ProjectController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(string $url)
+    public function edit(string $url): \Illuminate\Contracts\View\Factory|\Illuminate\Foundation\Application|\Illuminate\Contracts\View\View|\Illuminate\Contracts\Foundation\Application
     {
         $data = [
             'project' => Project::where('url', $url)->first()
@@ -116,8 +117,35 @@ class ProjectController extends Controller
         return redirect()->route('index');
     }
 
-    public function quit(string $url) {
+    public function quit(string $url): \Illuminate\Foundation\Application|\Illuminate\Routing\Redirector|\Illuminate\Http\RedirectResponse|\Illuminate\Contracts\Foundation\Application
+    {
         $user_id = Auth::id();
         $project = Project::where('url', $url)->first();
+        $task_id = $project->tasks()
+            ->where('executor_id', $user_id)
+            ->pluck('tasks.id')
+            ->toArray();
+
+        try {
+            DB::transaction(function () use ($project, $user_id, $task_id) {
+                Notification::whereIn('notifiable_id', $task_id)
+                    ->where([
+                        'notifiable_type' => 'task_deadline',
+                        'deleted_at' => null
+                    ])
+                    ->update(['deleted_at' => now()]);
+
+                $project->tasks()->where('executor_id', $user_id)->update(['executor_id' => null]);
+
+                $project->participantRecords()->where('user_id', $user_id)->delete();
+            });
+
+            return redirect('cabinet');
+        } catch (\Exception $e) {
+            return redirect()->back()->withErrors([
+                'status' => 'error',
+                'message' => $e->getMessage()
+            ]);
+        }
     }
 }

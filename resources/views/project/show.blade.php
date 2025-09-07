@@ -489,7 +489,7 @@
             function quitProject () {
                 if (confirm('Вы действительно хотите покинуть текущий проект?')) {
                     console.log('Yes');
-                    window.location.href = '{{ route('project.quit', $project->url) }}';
+                    window.location.href = '{{ route('project.quit', $current_project->url) }}';
                 }
             }
         </script>
