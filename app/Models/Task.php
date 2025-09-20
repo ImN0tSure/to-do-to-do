@@ -14,24 +14,12 @@ class Task extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['name', 'description', 'begin_date', 'end_date', 'priority', 'tasklist_id'];
+    protected $fillable = ['name', 'description', 'executor_id', 'begin_date', 'end_date', 'priority', 'tasklist_id'];
     public $timestamps = false;
 
-    public function taskParticipantRecord(): HasOne
+    public function executor(): HasOne
     {
-        return $this->hasOne(TaskParticipant::class);
-    }
-
-    public function executor(): HasOneThrough
-    {
-        return $this->hasOneThrough(
-            UserInfo::class,
-            TaskParticipant::class,
-            'task_id',
-            'user_id',
-            'id',
-            'user_id'
-        );
+        return $this->hasOne(UserInfo::class, 'user_id', 'executor_id');
     }
 
     public function comments(): HasMany

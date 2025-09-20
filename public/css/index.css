@@ -41,8 +41,12 @@ header .logo {
     text-shadow: 1px 1px 3px #d83979;
 }
 
-section {
+section, aside {
     margin-bottom: 20px;
+}
+
+.hidden {
+    display: none!important;
 }
 
 .clock {

@@ -56,7 +56,7 @@
                     <!-- Поле для выбора исполнителя -->
                     <div class="form-field">
                         <label for="executor">Исполнитель</label>
-                        <select id="executor" name="participant">
+                        <select id="executor" name="executor_id">
 
                             <option selected value=""></option>
 
@@ -81,7 +81,7 @@
                             @endforeach
 
                         </select>
-                        @error('participant')
+                        @error('executor_id')
                         <div class="error-message">Исполнителя не существует.</div>
                         @enderror
                     </div>

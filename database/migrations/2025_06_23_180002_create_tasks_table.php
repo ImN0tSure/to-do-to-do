@@ -14,6 +14,7 @@ return new class extends Migration {
             $table->id()->autoIncrement();
             $table->string('name');
             $table->text('description');
+            $table->integer('executor_id')->nullable();
             $table->timestamp('begin_date');
             $table->timestamp('end_date');
             $table->integer('priority');

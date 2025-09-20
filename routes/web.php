@@ -52,8 +52,12 @@ Route::group(['middleware' => 'auth'], function () {
             ->name('project.store');
         Route::resource('project', ProjectController::class)
             ->except(['create', 'store']);
+        Route::get('project/{project}/quit', [ProjectController::class, 'quit'])
+            ->name('project.quit');
         Route::resource('project/{project}/tasklist', TasklistController::class);
         Route::resource('project/{project}/task', TaskController::class);
+        Route::delete('project/{project}/exclude-participants', [ProjectController::class, 'excludeParticipants'])
+        ->name('project.exclude-participants');
     });
     Route::get('cabinet', [CabinetController::class, 'index'])
         ->name('cabinet');

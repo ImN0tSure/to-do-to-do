@@ -56,35 +56,42 @@
                 <!-- Контент вкладки -->
                 <div class="tab-content" id="tab1">
                     <!-- Раздел "О проекте" -->
-                    <section>
+                    <div class="section">
                         <h2>О проекте</h2>
                         <p>
                             {{ $current_project->description }}
                         </p>
-                    </section>
+                    </div>
 
                     <!-- Раздел "Участники проекта" -->
-                    <section>
+                    <div class="section">
                         <h2>Участники проекта</h2>
                         <div class="project-participants-wrap">
                             @foreach($participants as $participant)
-                                <div class="participant">
+                                <div class="participant" data-user-id="{{ $participant->user_id }}">
                                     <div class="participant-photo">
                                         <img src="{{ $participant->avatar_img }}" alt="avatar-img"/>
                                     </div>
                                     <div class="participant-info">
                                         <p>
-                                            <strong>{{ $participant->name }} {{ $participant->surname }}</strong>
+                                            <strong>
+                                                {{ $participant->name }} {{ $participant->surname }}
+                                                @if(auth()->id() === $participant->user_id)
+                                                    (Вы)
+                                                @endif
+                                            </strong>
                                         </p>
                                     </div>
                                 </div>
                             @endforeach
                         </div>
-                    </section>
+                    </div>
                     <!-- Раздел "Дополнительные кнопки -->
-                    <section class="additional-btn">
+                    <div class="section additional-btn">
                         <button class="btn" onclick="openAddParticipantModal()">Добавить участника</button>
-                    </section>
+                        <button class="btn" onclick="openExcludeParticipantsModal()">Исключить участников</button>
+                        <button class="btn" onclick="quitProject()">Покинуть проект</button>
+                    </div>
                 </div>
 
                 <div class="tab-content active" id="tab2">
@@ -188,6 +195,21 @@
                         onclick="addParticipant()"
                     >Добавить
                     </button>
+                </div>
+            </div>
+            <!-- Модальное окно исключения участников проекта -->
+            <div class="modal" style="display:none" id="excludeParticipantsModal">
+                <div class="modal-content">
+                    <p class="exclude-note">Выберите участников, которых хотите исключить</p>
+                    <input class="search-for-exclusion" type="text" placeholder="Поиск">
+                    <div class="exclude-wrap">
+                        <div class="participants-list">
+
+                        </div>
+                        <div class="exclude-btn">
+                            <button class="btn exclude" onclick="excludeSelectedParticipants()">Х Исключить выбранных</button>
+                        </div>
+                    </div>
                 </div>
             </div>
         </main>
@@ -412,7 +434,7 @@
             }
 
             // Очистить и закрыть модалку
-            function clearAndCloseModal() {
+            function clearAndCloseAddModal() {
                 addParticipantModal.style.display = "none";
                 participantEmailField.value = '';
                 errorMessageDiv.style.display = 'none';
@@ -422,7 +444,8 @@
             // Закрыть модалку при клике вне её
             window.addEventListener("click", (e) => {
                 if (e.target === addParticipantModal) {
-                    clearAndCloseModal();
+                    console.log(e.target);
+                    clearAndCloseAddModal();
                 }
             });
 
@@ -460,7 +483,7 @@
                                 errorMessageDiv.innerText = errorMessage;
                             } else {
                                 console.log(data);
-                                clearAndCloseModal();
+                                clearAndCloseAddModal();
                                 alert('Уведомление успешно отправлено');
                             }
 
@@ -471,8 +494,113 @@
                 }
 
             }
+        </script>
 
+        <!-- Покинуть проект -->
+        <script>
+            function quitProject() {
+                if (confirm('Вы действительно хотите покинуть текущий проект?')) {
+                    console.log('Yes');
+                    window.location.href = '{{ route('project.quit', $current_project->url) }}';
+                }
+            }
+        </script>
 
+        <!-- Удалить участника -->
+        <script>
+            const excludeParticipantsModal = document.getElementById('excludeParticipantsModal');
+            const participantsList = document.querySelector('.participants-list');
+            const participantsForExclusion = [];
+
+            participantsList.addEventListener('click', (e) => {
+                let selectedParticipant = e.target.closest('.participant');
+
+                if (selectedParticipant) {
+                    const id = selectedParticipant?.dataset.userId;
+                    selectedParticipant.querySelector('.participant-info').classList.toggle('excluded');
+                    addOrDeleteToExclusionArray(id);
+                }
+
+            })
+
+            function addOrDeleteToExclusionArray(id) {
+                const index = participantsForExclusion.indexOf(id);
+
+                if (index !== -1) {
+                    participantsForExclusion.splice(index, 1);
+                } else {
+                    participantsForExclusion.push(id);
+                }
+            }
+
+            function openExcludeParticipantsModal() {
+                const participantsList = document.querySelector('.project-participants-wrap').innerHTML;
+                document.querySelector('.participants-list').innerHTML = participantsList;
+
+                excludeParticipantsModal.style.display = 'flex';
+            }
+
+            window.addEventListener("click", (e) => {
+                if (e.target === excludeParticipantsModal) {
+                    clearAndCloseExcludeModal();
+                }
+            });
+
+            function clearAndCloseExcludeModal() {
+                excludeParticipantsModal.style.display = 'none';
+                excludeParticipantsModal.querySelector('.participants-list').innerHTML = '';
+                participantsForExclusion.length = 0;
+            }
+
+            async function excludeSelectedParticipants() {
+                if (participantsForExclusion.length < 1) {
+                    clearAndCloseExcludeModal();
+                    return;
+                }
+
+                try {
+                    const response = await fetch('{{ route('project.exclude-participants', $current_project->url) }}', {
+                        method: 'DELETE',
+                        headers: {
+                            "Content-Type": "application/json",
+                            "Accept": "application/json",
+                            "X-CSRF-TOKEN": document
+                                .querySelector('meta[name="csrf-token"]')
+                                .getAttribute("content")
+                        },
+                        body: JSON.stringify({
+                            ids: participantsForExclusion
+                        })
+                    })
+
+                    const data = await response.json();
+
+                    clearAndCloseExcludeModal();
+
+                    for (const id in data) {
+                        if (data[id].status === 'success') {
+                            removeParticipantFromPage(id);
+                        } else {
+                            console.log(data);
+                        }
+                    }
+                    alert('Пользователи успешно удалены');
+                } catch (e) {
+                    console.log(e.message);
+                }
+
+            }
+
+            function removeParticipantFromPage(id) {
+                const participants = document.querySelectorAll('.participant');
+                let participantsArr = Array.from(participants);
+
+                participantsArr.forEach(function (elem) {
+                    if (elem.dataset.userId === id) {
+                        elem.remove();
+                    }
+                })
+            }
         </script>
 
     </x-slot:scripts>

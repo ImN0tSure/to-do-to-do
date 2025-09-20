@@ -53,8 +53,8 @@
 
                     <!-- Поле для выбора исполнителя -->
                     <div class="form-field">
-                        <label for="participant">Исполнитель</label>
-                        <select id="participant" name="participant">
+                        <label for="executor">Исполнитель</label>
+                        <select id="executor" name="executor_id">
                             <option value="" selected></option>
                             @foreach($project->participants as $participant)
                                 <option value="{{ $participant->id }}">
@@ -62,7 +62,7 @@
                                 </option>
                             @endforeach
                         </select>
-                        @error('participant')
+                        @error('executor_id')
                         <div class="error-message">Исполнителя не существует.</div>
                         @enderror
                     </div>
