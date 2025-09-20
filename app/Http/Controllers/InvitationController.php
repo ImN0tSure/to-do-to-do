@@ -79,7 +79,7 @@ class InvitationController extends Controller
         ProjectParticipant::create([
             'project_id' => $project_id,
             'user_id' => Auth::id(),
-            'status' => 2
+            'status' => '2'
         ]);
 
         $this->deleteOriginalInvitationNotification($notifiable_id);

@@ -9,7 +9,7 @@
     width: 82%;
 }
 
-.section, .exclude-note {
+.section {
     margin-bottom: 20px;
 }
 
@@ -152,6 +152,10 @@
     justify-content: space-evenly;
 }
 
+.exclude-btn {
+    margin-top: 20px;
+}
+
 .exclude {
     background-color: #dd1818;
 }
@@ -200,6 +204,7 @@
     box-shadow: 0 6px 15px rgba(240, 98, 146, 0.4);
     width: 350px;
     max-width: 90%;
+    max-height: 70%;
     display: flex;
     flex-direction: column;
     gap: 12px;
@@ -330,3 +335,31 @@
 .row-elem {
     background: #fce7f0;
 }
+
+/*Исключение из проекта */
+.participants-list .participant {
+    margin-bottom: 20px;
+}
+
+.participant {
+    position: relative;
+}
+
+.excluded:before {
+    content: "";
+    border-bottom: 3px solid #7a2350;
+    position: absolute;
+    width: 100%;
+    height: 50%;
+}
+
+.participants-list .participant:hover {
+    cursor: pointer;
+}
+
+.participants-list {
+    overflow-y: auto;
+    max-height: 350px;
+}
+
+

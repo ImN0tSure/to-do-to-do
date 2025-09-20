@@ -14,7 +14,7 @@ return new class extends Migration {
             $table->id()->autoIncrement();
             $table->integer('project_id')->unsigned();
             $table->integer('user_id')->unsigned();
-            $table->string('status');
+            $table->enum('status', ['0', '1', '2']);
         });
     }
 

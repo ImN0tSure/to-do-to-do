@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Notification;
 use App\Models\Project;
 use App\Models\ProjectParticipant;
+use App\Services\GetProjectId;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -68,14 +69,10 @@ class ProjectController extends Controller
     {
         $project = Project::where('url', $project_url)->first();
 
-        if (!$project) {
-            return abort(404);
-        }
-
         $data = [
             'projects' => $this->index(),
             'current_project' => $project,
-            'participants' => $project->participants()->select('name', 'surname', 'avatar_img')->get(),
+            'participants' => $project->participants()->select('name', 'surname', 'avatar_img', 'user_infos.user_id')->get(),
             'tasklists' => $project->tasklists()->with('tasks')->get(),
         ];
 
@@ -117,10 +114,77 @@ class ProjectController extends Controller
         return redirect()->route('index');
     }
 
-    public function quit(string $url): \Illuminate\Foundation\Application|\Illuminate\Routing\Redirector|\Illuminate\Http\RedirectResponse|\Illuminate\Contracts\Foundation\Application
+    public function quit(string $project_url): \Illuminate\Foundation\Application|\Illuminate\Routing\Redirector|\Illuminate\Http\RedirectResponse|\Illuminate\Contracts\Foundation\Application
     {
         $user_id = Auth::id();
-        $project = Project::where('url', $url)->first();
+
+        $response = $this->removeProjectConnectedData($project_url, $user_id);
+
+        if ($response) {
+            return redirect()->route('cabinet');
+        } else {
+            return redirect()->back()->withErrors([
+                'status' => 'error',
+                'message' => $response,
+            ]);
+        }
+    }
+
+    public function excludeParticipants(Request $request, $project_url) {
+        $project_id = GetProjectId::byUrl($project_url);
+        $participants = ProjectParticipant::where('project_id', $project_id)->get();
+        $user_status_in_project = $participants->firstWhere('user_id', Auth::id())->status;
+        $count_participants = $participants->count();
+
+        $validate_data = $request->validate([
+            'ids' => [
+                'required',
+                'array',
+                'max:' . $count_participants,
+            ],
+            'ids.*' => [
+                'numeric',
+                function ($attribute, $value, $fail) use ($participants, $user_status_in_project) {
+                    if ($user_status_in_project >= $value) {
+                        $fail('Вы не можете исключать из проекта пользователей выше или равных вам по статусу');
+                    }
+
+                    if (!$participants->contains('user_id', $value)) {
+                        $fail('Пользоваетеля нет в проекте');
+                    }
+                }
+            ],
+            [
+                'ids.required' => 'Пустой массив.',
+                'ids.array' => 'ids должен быть массивом',
+                'ids.max' => 'В проекте нет столько пользователей',
+                'ids.*.numeric' => 'id должен быть числом',
+            ]
+        ]);
+
+        $ids = $validate_data['ids'];
+
+        $response_data = [];
+
+        foreach($ids as $user_id) {
+            $response = $this->removeProjectConnectedData($project_url, $user_id);
+            if ($response) {
+                $response_data[$user_id] = [
+                    'status' => 'success',
+                ];
+            } else {
+                $response_data[$user_id] = [
+                    'status' => 'error',
+                    'message' => $response,
+                ];
+            }
+        }
+
+        return response()->json($response_data);
+    }
+
+    public function removeProjectConnectedData ($project_url, $user_id) {
+        $project = Project::where('url', $project_url)->first();
         $task_id = $project->tasks()
             ->where('executor_id', $user_id)
             ->pluck('tasks.id')
@@ -139,13 +203,9 @@ class ProjectController extends Controller
 
                 $project->participantRecords()->where('user_id', $user_id)->delete();
             });
-
-            return redirect('cabinet');
         } catch (\Exception $e) {
-            return redirect()->back()->withErrors([
-                'status' => 'error',
-                'message' => $e->getMessage()
-            ]);
+            return $e->getMessage();
         }
+        return true;
     }
 }

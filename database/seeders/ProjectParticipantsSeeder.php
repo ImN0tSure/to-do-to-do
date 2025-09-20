@@ -16,33 +16,33 @@ class ProjectParticipantsSeeder extends Seeder
             [
                 'user_id' => 1,
                 'project_id' => 1,
-                'status' => 1,
+                'status' => '0',
             ],
             [
                 'user_id' => 1,
                 'project_id' => 2,
-                'status' => 1,
+                'status' => '0',
             ],
             [
                 'user_id' => 2,
                 'project_id' => 1,
-                'status' => 2,
+                'status' => '2',
             ],
             [
                 'user_id' => 3,
                 'project_id' => 1,
-                'status' => 2,
+                'status' => '2',
             ],
             [
                 'user_id' => 5,
                 'project_id' => 1,
-                'status' => 1,
+                'status' => '1',
             ],
 
             [
                 'user_id' => 6,
                 'project_id' => 2,
-                'status' => 1,
+                'status' => '1',
             ],
         ]);
     }
