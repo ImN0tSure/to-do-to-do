@@ -9,19 +9,14 @@
 
     <x-slot:nav>
         <nav>
-            <a href="
-                @auth
-                    {{ route('cabinet') }}
-                @endauth
-                @guest
-                    {{ route('main') }}
-                @endguest
-            ">Главная</a>
             @auth
-                <a href="#">Уведомления</a>
+                <a href="{{ route('cabinet') }}">Главная</a>
+                <a href="{{ route('notifications') }}">Уведомления</a>
+                <a href="{{ route('user-info.edit', auth()->id()) }}">Профиль</a>
                 <a href="{{ route('logout') }}">Выйти</a>
             @endauth
             @guest
+                <a href="{{ route('main') }}">Главная</a>
                 <a href="{{ route('login') }}">Войти</a>
             @endguest
         </nav>

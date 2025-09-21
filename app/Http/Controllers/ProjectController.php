@@ -72,7 +72,10 @@ class ProjectController extends Controller
         $data = [
             'projects' => $this->index(),
             'current_project' => $project,
-            'participants' => $project->participants()->select('name', 'surname', 'avatar_img', 'user_infos.user_id')->get(),
+            'participants' => $project
+                ->participants()
+                ->select('name', 'surname', 'avatar_img', 'user_infos.user_id')
+                ->get(),
             'tasklists' => $project->tasklists()->with('tasks')->get(),
         ];
 
@@ -136,6 +139,7 @@ class ProjectController extends Controller
         $user_status_in_project = $participants->firstWhere('user_id', Auth::id())->status;
         $count_participants = $participants->count();
 
+
         $validate_data = $request->validate([
             'ids' => [
                 'required',
@@ -145,12 +149,12 @@ class ProjectController extends Controller
             'ids.*' => [
                 'numeric',
                 function ($attribute, $value, $fail) use ($participants, $user_status_in_project) {
-                    if ($user_status_in_project >= $value) {
-                        $fail('Вы не можете исключать из проекта пользователей выше или равных вам по статусу');
-                    }
-
                     if (!$participants->contains('user_id', $value)) {
                         $fail('Пользоваетеля нет в проекте');
+                    }
+
+                    if ($user_status_in_project >= $participants->firstWhere('user_id', $value)->status) {
+                        $fail('Вы не можете исключать из проекта пользователей выше или равных вам по статусу');
                     }
                 }
             ],

@@ -73,14 +73,28 @@
                                         <img src="{{ $participant->avatar_img }}" alt="avatar-img"/>
                                     </div>
                                     <div class="participant-info">
-                                        <p>
+                                        <div class="participant-name">
                                             <strong>
                                                 {{ $participant->name }} {{ $participant->surname }}
                                                 @if(auth()->id() === $participant->user_id)
                                                     (Вы)
                                                 @endif
                                             </strong>
-                                        </p>
+                                        </div>
+                                        <div class="participant-status">
+                                            <span>
+                                                @switch($participant->pivot->status)
+                                                    @case('0')
+                                                        создатель
+                                                        @break
+                                                    @case('1')
+                                                        куратор
+                                                        @break
+                                                    @default()
+                                                        исполнитель
+                                                @endswitch
+                                            </span>
+                                        </div>
                                     </div>
                                 </div>
                             @endforeach
@@ -207,7 +221,8 @@
 
                         </div>
                         <div class="exclude-btn">
-                            <button class="btn exclude" onclick="excludeSelectedParticipants()">Х Исключить выбранных</button>
+                            <button class="btn exclude" onclick="excludeSelectedParticipants()">Х Исключить выбранных
+                            </button>
                         </div>
                     </div>
                 </div>
@@ -517,7 +532,7 @@
 
                 if (selectedParticipant) {
                     const id = selectedParticipant?.dataset.userId;
-                    selectedParticipant.querySelector('.participant-info').classList.toggle('excluded');
+                    selectedParticipant.querySelector('.participant-name').classList.toggle('excluded');
                     addOrDeleteToExclusionArray(id);
                 }
 
@@ -575,20 +590,20 @@
 
                     const data = await response.json();
 
-                    clearAndCloseExcludeModal();
-
                     for (const id in data) {
                         if (data[id].status === 'success') {
                             removeParticipantFromPage(id);
                         } else {
-                            console.log(data);
+                            console.log(data)
+                            throw new Error(data.message)
                         }
                     }
-                    alert('Пользователи успешно удалены');
+
                 } catch (e) {
                     console.log(e.message);
                 }
 
+                clearAndCloseExcludeModal();
             }
 
             function removeParticipantFromPage(id) {
@@ -601,6 +616,23 @@
                     }
                 })
             }
+        </script>
+
+        <!-- Переход в профиль пользователя -->
+        <script>
+            const usersList = document.querySelector('.project-participants-wrap');
+
+            usersList.addEventListener('click', (e)=>{
+                const selectedUser = e.target.closest('.participant');
+                const userId = selectedUser?.dataset.userId;
+                const userRouteTpl = '{{ route('user-info.show', '#userId#') }}';
+                let route;
+
+                if (userId) {
+                    route = userRouteTpl.replace('#userId#', userId);
+                    window.location.href = route;
+                }
+            })
         </script>
 
     </x-slot:scripts>

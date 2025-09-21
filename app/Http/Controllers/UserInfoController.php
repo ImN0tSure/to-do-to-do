@@ -38,11 +38,11 @@ class UserInfoController extends Controller
      */
     public function show(string $id)
     {
-        $data = [
+        $user_info = [
             'user' => UserInfo::where('user_id', $id)->first(),
         ];
 
-        return view('userInfo.show', $data);
+        return view('userInfo.show', $user_info);
     }
 
     /**
@@ -55,7 +55,7 @@ class UserInfoController extends Controller
 
             return view('userInfo.createNChange', ['user_info' => $user_info]);
         } else {
-            return view('cabinet.main');
+            return redirect('cabinet');
         }
     }
 
