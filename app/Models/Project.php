@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasManyThrough;
 use Illuminate\Support\Collection;
@@ -55,16 +56,14 @@ class Project extends Model
         return $this->hasMany(ProjectParticipant::class);
     }
 
-    public function participants(): HasManyThrough
+    public function participants(): BelongsToMany
     {
-        return $this->hasManyThrough(
+        return $this->BelongsToMany(
             UserInfo::class,
-            ProjectParticipant::class,
+            'project_participants',
             'project_id',
-            'user_id',
-            'id',
             'user_id'
-        );
+        )->withPivot('status');
     }
 
 
