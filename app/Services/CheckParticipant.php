@@ -17,8 +17,4 @@ class CheckParticipant
         return $project->participantRecords()->where('user_id', $user_id)->exists();
     }
 
-    public static function task($user_id, $task_id)
-    {
-    }
-
 }

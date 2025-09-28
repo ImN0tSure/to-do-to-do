@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Notification;
 use App\Models\Project;
 use App\Models\ProjectParticipant;
+use App\Services\GetParticipantStatus;
 use App\Services\GetProjectId;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -68,14 +69,16 @@ class ProjectController extends Controller
     public function show($project_url): \Illuminate\Contracts\View\Factory|\Illuminate\Foundation\Application|\Illuminate\Contracts\View\View|\Illuminate\Contracts\Foundation\Application
     {
         $project = Project::where('url', $project_url)->first();
+        $participants = $project
+            ->participants()
+            ->select('name', 'surname', 'avatar_img', 'user_infos.user_id')
+            ->get();
 
         $data = [
             'projects' => $this->index(),
             'current_project' => $project,
-            'participants' => $project
-                ->participants()
-                ->select('name', 'surname', 'avatar_img', 'user_infos.user_id')
-                ->get(),
+            'participants' => $participants,
+            'current_user_status' => $participants->where('user_id', Auth::id())->first()->pivot->status,
             'tasklists' => $project->tasklists()->with('tasks')->get(),
         ];
 

@@ -45,12 +45,15 @@
                         <div class="tab active" onclick="switchTab('tab2')">Задачи</div>
                     </div>
 
+                    @if($current_user_status < 2 )
                     <div class="tabs-buttons">
                         <button class="btn add-list">Добавить список</button>
                         <a href="{{ route('task.create', $current_project->url) }}">
                             <button class="btn add-task">Добавить задачу</button>
                         </a>
                     </div>
+                    @endif
+
                 </div>
 
                 <!-- Контент вкладки -->
@@ -102,8 +105,10 @@
                     </div>
                     <!-- Раздел "Дополнительные кнопки -->
                     <div class="section additional-btn">
+                        @if($current_user_status < 2)
                         <button class="btn" onclick="openAddParticipantModal()">Добавить участника</button>
                         <button class="btn" onclick="openExcludeParticipantsModal()">Исключить участников</button>
+                        @endif
                         <button class="btn" onclick="quitProject()">Покинуть проект</button>
                     </div>
                 </div>
@@ -113,11 +118,15 @@
                     @foreach($tasklists as $tasklist)
                         <div class="task-list">
                             <div class="task-header">
+
+                                @if($current_user_status < 2)
                                 <button
                                     class="edit-btn"
                                     onclick="editTasklist('{{ $tasklist->id }}')"
                                 >Редактировать
                                 </button>
+                                @endif()
+
                                 <h2 id="tasklist{{ $tasklist->id }}Header">{{ $tasklist->name }}</h2>
                                 <span class="toggle-arrow"
                                       onclick="toggleTasks('taskList{{ $loop->iteration }}')">▼</span>
@@ -132,7 +141,7 @@
                                     <div class="task-left">Осталось</div>
                                 </div>
                                 @foreach($tasklist->tasks as $task)
-                                    <a href="{{ route('task.show', [$current_project->url, $task->id]) }}">
+                                    <a href="{{ route('task.edit', [$current_project->url, $task->id]) }}">
                                         <div class="task task-row row-elem">
                                             <div class="task-name">{{ $task->name }}</div>
                                             @switch($task->in_progress)
@@ -264,6 +273,7 @@
             }
         </script>
 
+        @if($current_user_status < 2)
         <!-- Добавление списка задач -->
         <script>
 
@@ -284,7 +294,6 @@
             });
 
             // Обработка кнопки "Добавить Задачу"
-
             document.addEventListener("DOMContentLoaded", function () {
                 confirmBtn.addEventListener("click", function () {
                     const name = document.getElementById("listName").value.trim();
@@ -459,7 +468,6 @@
             // Закрыть модалку при клике вне её
             window.addEventListener("click", (e) => {
                 if (e.target === addParticipantModal) {
-                    console.log(e.target);
                     clearAndCloseAddModal();
                 }
             });
@@ -508,16 +516,6 @@
                         });
                 }
 
-            }
-        </script>
-
-        <!-- Покинуть проект -->
-        <script>
-            function quitProject() {
-                if (confirm('Вы действительно хотите покинуть текущий проект?')) {
-                    console.log('Yes');
-                    window.location.href = '{{ route('project.quit', $current_project->url) }}';
-                }
             }
         </script>
 
@@ -615,6 +613,17 @@
                         elem.remove();
                     }
                 })
+            }
+        </script>
+        @endif
+
+        <!-- Покинуть проект -->
+        <script>
+            function quitProject() {
+                if (confirm('Вы действительно хотите покинуть текущий проект?')) {
+                    console.log('Yes');
+                    window.location.href = '{{ route('project.quit', $current_project->url) }}';
+                }
             }
         </script>
 
