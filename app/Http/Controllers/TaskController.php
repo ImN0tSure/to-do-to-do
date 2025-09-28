@@ -4,24 +4,23 @@ namespace App\Http\Controllers;
 
 use App\Models\Project;
 use App\Models\Task;
-use App\Models\Tasklist;
+use App\Models\UserInfo;
 use App\Services\GetProjectId;
+use App\Services\isAllowedForUpdate;
+use App\Services\isStatusHigherThan;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Validation\Rule;
 
 class TaskController extends Controller
 {
-    protected $task_not_found = [
-        'status' => 'error',
-        'message' => 'Task not found',
-    ];
-
     /**
      * Display a listing of the resource.
      */
     public function index()
     {
-        return 'index.page';
+        abort(404);
     }
 
     /**
@@ -29,6 +28,10 @@ class TaskController extends Controller
      */
     public function create($project_url)
     {
+        $project_id = getProjectId::byUrl($project_url);
+
+        $this->authorize('create', [Task::class, $project_id]);
+
         $data = [
             'project' => Project::where('url', $project_url)
                 ->with('tasklists')
@@ -45,6 +48,8 @@ class TaskController extends Controller
     public function store(Request $request, $project_url)
     {
         $project_id = GetProjectId::byUrl($project_url);
+
+        $this->authorize('create', [Task::class, $project_id]);
 
         $validate_data = $request->validate([
             'name' => 'required|max:255|min:3',
@@ -82,16 +87,43 @@ class TaskController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(string $project_url, $id)
+    public function show(string $project_url, $task_id)
     {
-        $task = Project::where('url', $project_url)
+        $project_id = getProjectId::byUrl($project_url);
+        if(isStatusHigherThan::executor($project_id))
+        {
+            return redirect()->route('task.edit', [$project_url, $task_id]);
+        }
+
+        $task = $this->getFullTaskInfo($project_url, $task_id);
+
+        $tasklists = Project::where('url', $project_url)
+            ->with('tasklists')
             ->first()
-            ->tasks()
-            ->with('executor')
-            ->with('tasklist')
-            ->get()
-            ->where('id', $id)
-            ->first();
+            ->tasklists;
+        $current_user = UserInfo::where('user_id', Auth::id())->select('user_id', 'name', 'surname')->first();
+
+        $data = [
+            'task' => $task,
+            'tasklists' => $tasklists,
+            'project_url' => $project_url,
+            'current_user' => $current_user
+        ];
+
+        return view('task.show', $data);
+    }
+
+    /**
+     * Show the form for editing the specified resource.
+     */
+    public function edit(string $project_url, string|int $task_id)
+    {
+        $project_id = getProjectId::byUrl($project_url);
+        if(!isStatusHigherThan::executor($project_id)) {
+            return redirect()->route('task.show', [$project_url, $task_id]);
+        }
+
+        $task = $this->getFullTaskInfo($project_url, $task_id);
 
         $participants_and_tasklists = Project::where('url', $project_url)
             ->with('participants')
@@ -105,72 +137,70 @@ class TaskController extends Controller
             'project_url' => $project_url,
         ];
 
-        return view('task.show', $data);
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(string $project_url, $task_id)
-    {
-//        $task = Project::where('url', $project_url)
-//            ->first()
-//            ->tasks()
-//            ->get()
-//            ->where('id', $task_id)
-//            ->first();
-//
-//        $tasklists = Project::where('url', $project_url)->first()->tasklists;
-//
-//        if ($task === null) {
-//            return $this->task_not_found;
-//        }
-//
-//        $dateTime = explode(' ', $task->end_date);
-//
-//        return view('task.edit', [
-//            'task' => $task,
-//            'tasklists' => $tasklists,
-//            'project_url' => $project_url,
-//            'date' => $dateTime[0],
-//            'time' => $dateTime[1],
-//        ]);
+        return view('task.edit', $data);
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $project_url, $task_id)
+    public function update(Request $request, string $project_url, string|int $task_id)
     {
         $project_id = GetProjectId::byUrl($project_url);
 
-        $validate_data = $request->validate([
-            'name' => 'required|max:255|min:3',
-            'description' => 'required|max:1500',
-            'executor_id' => [
-                'nullable',
-                'integer',
-                Rule::exists('project_participants', 'user_id')
-                    ->where(function ($query) use ($project_id) {
-                        $query->where('project_id', $project_id);
-                    })
-            ],
-            'tasklist_id' => [
-                'required',
-                'integer',
-                Rule::exists('tasklists', 'id')
-                    ->where(function ($query) use ($project_id) {
-                        $query->where('project_id', $project_id);
-                    }),
-            ],
-            'end_date' => 'required|date',
-            'end_time' => 'required|date_format:H:i',
-            'priority' => 'integer|required|min:1|max:3',
-            'in_progress' => 'boolean',
-        ]);
+        if(Gate::denies('update', [Task::class, $task_id])) {
+            return redirect()->route('project.show', $project_url);
+        }
 
-        $validate_data['end_date'] .= ' ' . $validate_data['end_time'];
-        unset($validate_data['end_time']);
+        if (isStatusHigherThan::executor($project_id)) {
+            $validate_data = $request->validate([
+                'name' => 'required|max:255|min:3',
+                'description' => 'required|max:1500',
+                'executor_id' => [
+                    'nullable',
+                    'integer',
+                    Rule::exists('project_participants', 'user_id')
+                        ->where(function ($query) use ($project_id) {
+                            $query->where('project_id', $project_id);
+                        })
+                ],
+                'tasklist_id' => [
+                    'required',
+                    'integer',
+                    Rule::exists('tasklists', 'id')
+                        ->where(function ($query) use ($project_id) {
+                            $query->where('project_id', $project_id);
+                        }),
+                ],
+                'end_date' => 'required|date',
+                'end_time' => 'required|date_format:H:i',
+                'priority' => 'integer|required|min:1|max:3',
+                'in_progress' => 'boolean',
+            ]);
+
+            $validate_data['end_date'] .= ' ' . $validate_data['end_time'];
+            unset($validate_data['end_time']);
+
+        } else {
+
+            $validate_data = $request->validate([
+                'executor_id' => [
+                    'nullable',
+                    'integer',
+                    Rule::exists('project_participants', 'user_id')
+                        ->where(function ($query) use ($project_id) {
+                            $query->where('project_id', $project_id);
+                        })
+                ],
+                'tasklist_id' => [
+                    'required',
+                    'integer',
+                    Rule::exists('tasklists', 'id')
+                        ->where(function ($query) use ($project_id) {
+                            $query->where('project_id', $project_id);
+                        }),
+                ],
+            ]);
+        }
 
         Task::where('id', $task_id)
             ->update($validate_data);
@@ -181,9 +211,24 @@ class TaskController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(string $project_url, $task_id)
+    public function destroy(string $project_url, string|int $task_id)
     {
+        $project_id = GetProjectId::byUrl($project_url);
+        $this->authorize('delete', [Task::class, $project_id]);
+
         Task::where('id', $task_id)->delete();
         return redirect()->route('project.show', $project_url);
+    }
+
+    protected function getFullTaskInfo(string $project_url, string|int $task_id)
+    {
+        return Project::where('url', $project_url)
+            ->first()
+            ->tasks()
+            ->with('executor')
+            ->with('tasklist')
+            ->get()
+            ->where('id', $task_id)
+            ->first();
     }
 }

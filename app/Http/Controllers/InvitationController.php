@@ -7,6 +7,7 @@ use App\Models\Notification;
 use App\Models\ProjectParticipant;
 use App\Models\User;
 use App\Services\CheckParticipant;
+use App\Services\GetParticipantStatus;
 use App\Services\GetProjectId;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -22,6 +23,8 @@ class InvitationController extends Controller
         if (!$validation->errors()->any()) {
             $new_participant_id = User::where('email', $request->email)->first()->id;
             $project_id = GetProjectId::byUrl($request->project_url);
+
+            $this->authorize('create', [Invitation::class, $project_id]);
 
             $validation->after(function ($validation) use ($request, $new_participant_id, $project_id) {
                 if (!checkParticipant::project($request->project_url, Auth::id())) {

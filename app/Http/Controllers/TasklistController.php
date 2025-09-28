@@ -4,7 +4,9 @@ namespace App\Http\Controllers;
 
 use App\Models\Project;
 use App\Models\Tasklist;
+use App\Services\GetParticipantStatus;
 use App\Services\GetProjectId;
+use http\Env\Response;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 
@@ -46,6 +48,9 @@ class TasklistController extends Controller
         ]);
 
         $project_id = GetProjectId::byUrl($project_url);
+
+        $this->authorize('create', [Tasklist::class, $project_id]);
+
         $validate_data['project_id'] = $project_id;
 
         $tasklist = Tasklist::create($validate_data);
@@ -100,6 +105,9 @@ class TasklistController extends Controller
      */
     public function update(Request $request, string $project_url, string $tasklist_id)
     {
+        $project_id = GetProjectId::byUrl($project_url);
+        $this->authorize('update', [Tasklist::class, $project_id]);
+
         $validate_data = $request->validateWithBag('tasklist_update', [
             'name' => 'required|max:255|min:3',
             'oldName' => [
