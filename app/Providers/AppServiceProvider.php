@@ -3,7 +3,9 @@
 namespace App\Providers;
 
 use App\Models\Invitation;
+use App\Models\Notification;
 use App\Observers\InvitationObserver;
+use App\Observers\NotificationObserver;
 use Illuminate\Database\Eloquent\Relations\Relation;
 use Illuminate\Support\ServiceProvider;
 
@@ -23,6 +25,7 @@ class AppServiceProvider extends ServiceProvider
     public function boot(): void
     {
         Invitation::observe(InvitationObserver::class);
+        Notification::observe(NotificationObserver::class);
 
         Relation::morphMap([
             'invitation' => \App\Models\Invitation::class,

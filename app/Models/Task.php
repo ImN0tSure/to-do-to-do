@@ -62,17 +62,17 @@ class Task extends Model
         } else {
             $curators = $this->project->participantRecords()->where('status', 1)->get();
 
-            $notifications = $curators->map(function ($curator) use ($event_type) {
-                return [
-                    'user_id' => $curator->user_id,
-                    'notifiable_type' => 'task_deadline',
-                    'notifiable_id' => $this->id,
-                    'event' => 'deadline',
-                    'event_type' => $event_type,
-                ];
-            })->toArray();
-
-            Notification::insert($notifications);
+            $curators->map(function ($curator) use ($event_type) {
+                Notification::create(
+                    [
+                        'user_id' => $curator->user_id,
+                        'notifiable_type' => 'task_deadline',
+                        'notifiable_id' => $this->id,
+                        'event' => 'deadline',
+                        'event_type' => $event_type,
+                    ]
+                );
+            });
         }
     }
 }

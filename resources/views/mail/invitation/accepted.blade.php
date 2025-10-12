@@ -1,0 +1,8 @@
+<div>
+    <p>
+        Здравствуйте, {{ $inviter->name }} {{ $inviter->patronymic }}
+    </p>
+    <p>
+        Пользователь {{ $invitee->name }} {{ $invitee->surname }} принял ваше приглашение в проект {{ $project_name }}.
+    </p>
+</div>
