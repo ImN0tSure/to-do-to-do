@@ -9,6 +9,7 @@ use App\Services\GetParticipantStatus;
 use App\Services\GetProjectId;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 
@@ -68,18 +69,40 @@ class ProjectController extends Controller
      */
     public function show($project_url): \Illuminate\Contracts\View\Factory|\Illuminate\Foundation\Application|\Illuminate\Contracts\View\View|\Illuminate\Contracts\Foundation\Application
     {
-        $project = Project::where('url', $project_url)->first();
-        $participants = $project
-            ->participants()
-            ->select('name', 'surname', 'avatar_img', 'user_infos.user_id')
-            ->get();
+        $project_id = GetProjectId::byUrl($project_url);
+//        $project = Project::where('url', $project_url)->first();
+        $project = Cache::remember("project:{$project_id}", 600, function () use ($project_id) {
+            return Project::where('id', $project_id)->first();
+        });
+
+//        $participants = $project
+//            ->participants()
+//            ->select('name', 'surname', 'avatar_img', 'user_infos.user_id')
+//            ->get();
+
+        $participants = Cache::remember("project:{$project_id}:participants", 600, function () use ($project_id) {
+            return Project::where('id', $project_id)
+                ->first()
+                ->participants()
+                ->select('name', 'surname', 'avatar_img', 'user_infos.user_id')
+                ->get();
+        });
+
+
+        $tasklists = Cache::remember("project:{$project_id}:tasklists", 60, function () use ($project_id) {
+            return Project::where('id', $project_id)
+                ->first()
+                ->tasklists()
+                ->with('tasks')
+                ->get();
+        });
 
         $data = [
             'projects' => $this->index(),
             'current_project' => $project,
             'participants' => $participants,
             'current_user_status' => $participants->where('user_id', Auth::id())->first()->pivot->status,
-            'tasklists' => $project->tasklists()->with('tasks')->get(),
+            'tasklists' => $tasklists,
         ];
 
         return view('project.show', $data);

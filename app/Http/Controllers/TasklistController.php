@@ -119,8 +119,9 @@ class TasklistController extends Controller
             ],
         ]);
         unset($validate_data['oldName']);
-        Tasklist::where('id', $tasklist_id)
-            ->update($validate_data);
+
+        $tasklist = Tasklist::findOrFail($tasklist_id);
+        $tasklist->update($validate_data);
 
         return response()
             ->json([

@@ -202,8 +202,8 @@ class TaskController extends Controller
             ]);
         }
 
-        Task::where('id', $task_id)
-            ->update($validate_data);
+        $task = Task::findOrFail($task_id);
+        $task->update($validate_data);
 
         return redirect()->route('project.show', $project_url);
     }
