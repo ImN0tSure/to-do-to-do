@@ -26,7 +26,7 @@
                         <input name="password" type="password" class="input-field" placeholder="Пароль" required>
                     </div>
                     @if ($errors->any())
-                        <div class="error-message">{{ $errors->first('message') }}</div>
+                        <div class="error-message">{{ $errors->first('login') }}</div>
                     @endif
                     <button type="submit" class="btn-primary">Войти</button>
                 </form>

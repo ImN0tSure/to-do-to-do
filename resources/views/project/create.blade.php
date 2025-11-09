@@ -21,18 +21,36 @@
                 <h2>Создать новый проект</h2>
                 <form action="{{ route('project.store') }}" method="POST">
                     @csrf
-                    <div>
+                    <div class="input-wrap">
                         <label for="name">Название проекта</label>
-                        <input type="text" id="name" name="name" placeholder="Введите название проекта" required>
+                        <input
+                            type="text"
+                            id="name"
+                            name="name"
+                            placeholder="Введите название проекта"
+                            value="{{ old('name') }}"
+                            required
+                        >
+                        @error('name')
+                        <div class="error-message">{{ $message }}</div>
+                        @enderror
                     </div>
 
-                    <div>
+
+                    <div class="input-wrap">
                         <label for="descr">Описание проекта</label>
-                        <textarea id="descr" name="description" placeholder="Введите описание проекта"
-                                  required></textarea>
+                        <textarea
+                            id="descr"
+                            name="description"
+                            placeholder="Введите описание проекта"
+                            required
+                        >{{ old('description') }}</textarea>
+                        @error('description')
+                        <div class="error-message">{{ $message }}</div>
+                        @enderror
                     </div>
 
-                    <div>
+                    <div class="input-wrap">
                         <label for="end">Дата окончания</label>
                         <input type="date" id="end" name="end_date">
                     </div>

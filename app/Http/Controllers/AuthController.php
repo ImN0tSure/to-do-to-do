@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\AuthorizeUserRequest;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -12,19 +13,16 @@ class AuthController extends Controller
         return view('login.auth');
     }
 
-    public function authorizeUser(Request $request)
+    public function authorizeUser(AuthorizeUserRequest $request)
     {
-        $credentials = $request->validateWithBag('auth', [
-            'email' => ['required', 'email'],
-            'password' => ['required'],
-        ]);
+        $credentials = $request->validated();
 
         if (Auth::attempt($credentials)) {
             $request->session()->regenerate();
             return redirect()->intended('/cabinet');
         }
         return back()->withErrors([
-            'message' => 'Неверное имя пользователя, или пароль.',
+            'login' => 'Неверные имя пользователя или пароль.'
         ]);
     }
 

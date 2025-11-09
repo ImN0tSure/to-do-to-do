@@ -19,7 +19,8 @@ class UserInfo extends Model
         'patronymic',
         'avatar_img',
         'phone',
-        'contact_email'
+        'contact_email',
+        'about'
     ];
     public $timestamps = false;
 
