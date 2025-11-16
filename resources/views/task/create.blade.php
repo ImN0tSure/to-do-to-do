@@ -30,10 +30,11 @@
                             id="taskTitle"
                             name="name"
                             placeholder="Введите заголовок задачи"
+                            value="{{ old('name') }}"
                             required
                         >
                         @error('name')
-                        <div class="error-message">Заголовок обязателен. Минимум 3 символа.</div>
+                        <div class="error-message">{{ $message }}</div>
                         @enderror
                     </div>
 
@@ -45,9 +46,9 @@
                             name="description"
                             placeholder="Введите краткое описание задачи"
                             required
-                        ></textarea>
+                        >{{ old('description') }}</textarea>
                         @error('description')
-                        <div class="error-message">Описание обязательно. Максимум 1500 символов.</div>
+                        <div class="error-message">{{ $message }}</div>
                         @enderror
                     </div>
 
@@ -63,7 +64,7 @@
                             @endforeach
                         </select>
                         @error('executor_id')
-                        <div class="error-message">Исполнителя не существует.</div>
+                        <div class="error-message">{{ $message }}</div>
                         @enderror
                     </div>
 
@@ -79,25 +80,39 @@
                             @endforeach
                         </select>
                         @error('tasklist_id')
-                        <div class="error-message">Список не принадлежит проекту.</div>
+                        <div class="error-message">{{ $message }}</div>
                         @enderror
                     </div>
 
                     <!-- Поле для даты окончания -->
                     <div class="form-field">
                         <label for="end_date">Дата окончания</label>
-                        <input type="date" id="end_date" name="end_date" required style="width: 20%">
+                        <input
+                            type="date"
+                            id="end_date"
+                            name="end_date"
+                            value="{{ old('end_date') }}"
+                            required
+                            style="width: 20%"
+                        >
                         @error('end_date')
-                        <div class="error-message">Введите корректную дату.</div>
+                        <div class="error-message">{{ $message }}</div>
                         @enderror
                     </div>
 
                     <!-- Поле для время окончания -->
                     <div class="form-field">
                         <label for="end_time">Время окончания</label>
-                        <input type="time" id="end_time" name="end_time" required style="width: 20%">
+                        <input
+                            type="time"
+                            id="end_time"
+                            name="end_time"
+                            value="{{ old('end_time') }}"
+                            required
+                            style="width: 20%"
+                        >
                         @error('end_time')
-                        <div class="error-message">Введите корректное время.</div>
+                        <div class="error-message">{{ $message }}</div>
                         @enderror
                     </div>
 
@@ -110,7 +125,7 @@
                             <option value="3">Низкий</option>
                         </select>
                         @error('priority')
-                        <div class="error-message">Некорректно выбран приоритет.</div>
+                        <div class="error-message">{{ $message }}</div>
                         @enderror
                     </div>
 

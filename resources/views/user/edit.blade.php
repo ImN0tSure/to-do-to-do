@@ -1,5 +1,5 @@
 <div>
-    <form method="post" action="{{ route('user.update', $user->id) }}">
+    <form method="post" action="{{ route('user.update') }}">
         @method('patch')
         @csrf
         <p>

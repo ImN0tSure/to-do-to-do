@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\StoreTasklistRequest;
+use App\Http\Requests\UpdateTasklistRequest;
 use App\Models\Project;
 use App\Models\Tasklist;
 use App\Services\GetParticipantStatus;
@@ -40,12 +42,9 @@ class TasklistController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request, $project_url)
+    public function store(StoreTasklistRequest $request, $project_url)
     {
-        $validate_data = $request->validateWithBag('tasklist', [
-            'name' => 'required|max:255|min:3',
-            'description' => 'max:255',
-        ]);
+        $validate_data = $request->validated();
 
         $project_id = GetProjectId::byUrl($project_url);
 
@@ -103,21 +102,12 @@ class TasklistController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $project_url, string $tasklist_id)
+    public function update(UpdateTasklistRequest $request, string $project_url, string $tasklist_id)
     {
         $project_id = GetProjectId::byUrl($project_url);
         $this->authorize('update', [Tasklist::class, $project_id]);
 
-        $validate_data = $request->validateWithBag('tasklist_update', [
-            'name' => 'required|max:255|min:3',
-            'oldName' => [
-                'required',
-                'max:255',
-                'min:3',
-                Rule::exists('tasklists', 'name')
-                    ->where('id', $tasklist_id)
-            ],
-        ]);
+        $validate_data = $request->validated();
         unset($validate_data['oldName']);
 
         $tasklist = Tasklist::findOrFail($tasklist_id);
