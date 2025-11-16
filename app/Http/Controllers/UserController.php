@@ -2,8 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\StoreUserRequest;
+use App\Http\Requests\UpdateUserRequest;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 
 class UserController extends Controller
@@ -27,13 +30,15 @@ class UserController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(StoreUserRequest $request)
     {
-        $validate_data = $request->validate([
-            'email' => 'required|email|unique:users|max:30',
-            'password' => 'required|min:8|max:25',
-            'confirm_password' => 'required|same:password',
-        ]);
+//        $validate_data = $request->validate([
+//            'email' => 'required|email|unique:users|max:30',
+//            'password' => 'required|min:8|max:25',
+//            'confirm_password' => 'required|same:password',
+//        ]);
+
+        $validate_data = $request->validated();
 
         $validate_data['password'] = Hash::make($validate_data['password']);
         unset($validate_data['confirm_password']);
@@ -64,15 +69,11 @@ class UserController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id)
+    public function update(UpdateUserRequest $request)
     {
-        $user = User::find($id)->firstOrFail();
+        $user = User::find(Auth::id())->firstOrFail();
 
-        $validate_data = $request->validate([
-            'password' => 'required|min:6',
-            'new_password' => 'required|min:6',
-            'confirm_new_password' => 'required|same:new_password',
-        ]);
+        $validate_data = $request->validated();
 
         if (Hash::check($validate_data['password'], $user->password)) {
             $user->password = Hash::make($validate_data['new_password']);

@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\ExcludeParticipantsRequest;
+use App\Http\Requests\SaveProjectRequest;
 use App\Models\Notification;
 use App\Models\Project;
 use App\Models\ProjectParticipant;
@@ -9,6 +11,7 @@ use App\Services\GetParticipantStatus;
 use App\Services\GetProjectId;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 
@@ -39,23 +42,19 @@ class ProjectController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request): \Illuminate\Http\RedirectResponse
+    public function store(SaveProjectRequest $request): \Illuminate\Http\RedirectResponse
     {
-        $validData = $request->validate([
-            'name' => 'required',
-            'description' => 'required | max:255',
-            'end_date' => 'max:255',
-        ]);
+        $validate_data = $request->validated();
 
         do {
-            $validData['url'] = Str::random(10);
-        } while (Project::where('url', $validData['url'])->first() != null);
+            $validate_data['url'] = Str::random(10);
+        } while (Project::where('url', $validate_data['url'])->first() != null);
 
-        $validData['begin_date'] = date('Y-m-d H:i:s');
+        $validate_data['begin_date'] = date('Y-m-d H:i:s');
 
         $participate = [
-            'user_id' => Auth::id(), // Поменять на подтягивающийся из сессии
-            'project_id' => Project::createProject($validData),
+            'user_id' => Auth::id(),
+            'project_id' => Project::createProject($validate_data),
             'status' => 1,
         ];
 
@@ -68,18 +67,41 @@ class ProjectController extends Controller
      */
     public function show($project_url): \Illuminate\Contracts\View\Factory|\Illuminate\Foundation\Application|\Illuminate\Contracts\View\View|\Illuminate\Contracts\Foundation\Application
     {
-        $project = Project::where('url', $project_url)->first();
-        $participants = $project
-            ->participants()
-            ->select('name', 'surname', 'avatar_img', 'user_infos.user_id')
-            ->get();
+        $project_id = GetProjectId::byUrl($project_url);
+
+//        $project = Project::where('url', $project_url)->first();
+        $project = Cache::remember("project:{$project_id}", 600, function () use ($project_id) {
+            return Project::where('id', $project_id)->first();
+        });
+
+//        $participants = $project
+//            ->participants()
+//            ->select('name', 'surname', 'avatar_img', 'user_infos.user_id')
+//            ->get();
+
+        $participants = Cache::remember("project:{$project_id}:participants", 600, function () use ($project_id) {
+            return Project::where('id', $project_id)
+                ->first()
+                ->participants()
+                ->select('name', 'surname', 'avatar_img', 'user_infos.user_id')
+                ->get();
+        });
+
+
+        $tasklists = Cache::remember("project:{$project_id}:tasklists", 60, function () use ($project_id) {
+            return Project::where('id', $project_id)
+                ->first()
+                ->tasklists()
+                ->with('tasks')
+                ->get();
+        });
 
         $data = [
             'projects' => $this->index(),
             'current_project' => $project,
             'participants' => $participants,
             'current_user_status' => $participants->where('user_id', Auth::id())->first()->pivot->status,
-            'tasklists' => $project->tasklists()->with('tasks')->get(),
+            'tasklists' => $tasklists,
         ];
 
         return view('project.show', $data);
@@ -90,24 +112,22 @@ class ProjectController extends Controller
      */
     public function edit(string $url): \Illuminate\Contracts\View\Factory|\Illuminate\Foundation\Application|\Illuminate\Contracts\View\View|\Illuminate\Contracts\Foundation\Application
     {
-        $data = [
-            'project' => Project::where('url', $url)->first()
-        ];
-
-        return view('project.edit', $data);
+        abort('404');
+//        $data = [
+//            'project' => Project::where('url', $url)->first()
+//        ];
+//
+//        return view('project.edit', $data);
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $url): \Illuminate\Http\RedirectResponse
+    public function update(SaveProjectRequest $request, string $url): \Illuminate\Http\RedirectResponse
     {
-        $validData = $request->validate([
-            'name' => 'required',
-            'description' => 'required | max:255',
-        ]);
+        $validate_data = $request->validated();
 
-        Project::where('url', $url)->update($validData);
+        Project::where('url', $url)->update($validate_data);
         return redirect()->route('project.index');
     }
 
@@ -136,38 +156,9 @@ class ProjectController extends Controller
         }
     }
 
-    public function excludeParticipants(Request $request, $project_url) {
-        $project_id = GetProjectId::byUrl($project_url);
-        $participants = ProjectParticipant::where('project_id', $project_id)->get();
-        $user_status_in_project = $participants->firstWhere('user_id', Auth::id())->status;
-        $count_participants = $participants->count();
+    public function excludeParticipants(ExcludeParticipantsRequest $request, $project_url) {
 
-
-        $validate_data = $request->validate([
-            'ids' => [
-                'required',
-                'array',
-                'max:' . $count_participants,
-            ],
-            'ids.*' => [
-                'numeric',
-                function ($attribute, $value, $fail) use ($participants, $user_status_in_project) {
-                    if (!$participants->contains('user_id', $value)) {
-                        $fail('Пользоваетеля нет в проекте');
-                    }
-
-                    if ($user_status_in_project >= $participants->firstWhere('user_id', $value)->status) {
-                        $fail('Вы не можете исключать из проекта пользователей выше или равных вам по статусу');
-                    }
-                }
-            ],
-            [
-                'ids.required' => 'Пустой массив.',
-                'ids.array' => 'ids должен быть массивом',
-                'ids.max' => 'В проекте нет столько пользователей',
-                'ids.*.numeric' => 'id должен быть числом',
-            ]
-        ]);
+        $validate_data = $request->validated();
 
         $ids = $validate_data['ids'];
 

@@ -62,7 +62,7 @@
                         </div>
                         <input type="file" id="avatarUpload" name="avatar_img" accept="image/*">
                         @error('avatar_img')
-                        <div class="error-message">{{ $errors->first('avatar_img') }}</div>
+                        <div class="error-message">{{ $message }}</div>
                         @enderror
                     </div>
 
@@ -76,13 +76,16 @@
                                     id="surname"
                                     name="surname"
                                     placeholder="Иванов"
+                                    @guest
+                                        value="{{ old('surname') }}"
+                                    @endguest
                                     @auth
                                         value = "{{ $user_info->surname }}"
                                     @endauth
                                     required
                                 >
                                 @error('surname')
-                                <div class="error-message">{{ $errors->first('surname') }}</div>
+                                <div class="error-message">{{ $message }}</div>
                                 @enderror
                             </div>
                             <div class="full-name__name">
@@ -92,13 +95,16 @@
                                     id="name"
                                     name="name"
                                     placeholder="Иван"
+                                    @guest
+                                        value="{{ old('name') }}"
+                                    @endguest
                                     @auth
                                         value = "{{ $user_info->name }}"
                                     @endauth
                                     required
                                 >
                                 @error('name')
-                                <div class="error-message">{{ $errors->first('name') }}</div>
+                                <div class="error-message">{{ $message }}</div>
                                 @enderror
                             </div>
                             <div class="full-name__patronymic">
@@ -107,13 +113,16 @@
                                     type="text"
                                     id="patronymic"
                                     name="patronymic"
+                                    @guest
+                                        value="{{ old('patronymic') }}"
+                                    @endguest
                                     @auth
                                         value = "{{ $user_info->patronymic }}"
                                     @endauth
                                     placeholder="Иванович"
                                 >
                                 @error('patronymic')
-                                <div class="error-message">{{ $errors->first('patronymic') }}</div>
+                                <div class="error-message">{{ $message }}</div>
                                 @enderror
                             </div>
                         </div>
@@ -124,13 +133,16 @@
                                     type="text"
                                     id="phone"
                                     name="phone"
+                                    @guest
+                                        value="{{ old('phone') }}"
+                                    @endguest
                                     @auth
                                         value = "{{ $user_info->phone }}"
                                     @endauth
                                     placeholder="+375-XX-XXX-XX-XX"
                                 >
                                 @error('phone')
-                                <div class="error-message">{{ $errors->first('phone') }}</div>
+                                <div class="error-message">{{ $message }}</div>
                                 @enderror
                             </div>
                             <div class="contact-info__email">
@@ -139,6 +151,9 @@
                                     type="text"
                                     id="email"
                                     name="contact_email"
+                                    @guest
+                                        value="{{ old('contact_email') }}"
+                                    @endguest
                                     @auth
                                         value = "{{ $user_info->contact_email }}"
                                     @endauth
@@ -146,7 +161,7 @@
                                     required
                                 >
                                 @error('contact_email')
-                                <div class="error-message">{{ $errors->first('contact_email') }}</div>
+                                <div class="error-message">{{ $message }}</div>
                                 @enderror
                             </div>
                         </div>
@@ -159,11 +174,9 @@
                         <textarea
                             id="about-me"
                             name="about"
-                            placeholder="Расскажите о себе">@auth
-                                {{ $user_info->about }}
-                            @endauth</textarea>
+                            placeholder="Расскажите о себе">@auth {{ $user_info->about }} @endauth</textarea>
                         @error('about')
-                        <div class="error-message">{{ $errors->first('about') }}</div>
+                        <div class="error-message">{{ $message }}</div>
                         @enderror
                     </div>
 

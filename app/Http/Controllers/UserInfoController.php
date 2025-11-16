@@ -2,10 +2,13 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\SaveUserInfoRequest;
 use App\Models\UserInfo;
-use App\Services\UserInfoValidator;
+use App\Services\Validators\UserInfoValidator;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+
+use function Laravel\Prompts\error;
 
 class UserInfoController extends Controller
 {
@@ -14,7 +17,7 @@ class UserInfoController extends Controller
      */
     public function index()
     {
-        return 'userInfo index';
+        abort('404');
     }
 
     /**
@@ -30,7 +33,7 @@ class UserInfoController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        abort('404');
     }
 
     /**
@@ -62,15 +65,10 @@ class UserInfoController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id)
+    public function update(SaveUserInfoRequest $request)
     {
-        $validate = UserInfoValidator::check($request->all());
 
-        if ($validate->fails()) {
-            return redirect()->back()->withErrors($validate);
-        }
-
-        $valid_data = $validate->validated();
+        $validate_data = $request->validated();
 
         if ($request->hasFile('avatar_img')) {
             $file = $request->file('avatar_img');
@@ -78,10 +76,10 @@ class UserInfoController extends Controller
             $file->move(public_path('img/avatars/'), $file_name);
             $path = '/img/avatars/' . $file_name;
 
-            $valid_data['avatar_img'] = $path;
+            $validate_data['avatar_img'] = $path;
         }
 
-        UserInfo::where('user_id', Auth::id())->update($valid_data);
+        UserInfo::where('user_id', Auth::id())->update($validate_data);
 
         return redirect()->route('cabinet');
     }
@@ -91,6 +89,6 @@ class UserInfoController extends Controller
      */
     public function destroy(string $id)
     {
-        //
+        abort('404');
     }
 }

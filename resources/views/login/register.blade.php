@@ -20,15 +20,22 @@
                 <form action="{{ route('tmp-save-user') }}" method="post">
                     @csrf
                     <div class="input-wrap">
-                        <input type="email" class="input-field" placeholder="Электронная почта" name="email" required>
+                        <input
+                            type="email"
+                            class="input-field"
+                            placeholder="Электронная почта"
+                            name="email"
+                            value="{{ old('email') }}"
+                            required
+                        >
                         @error('email')
-                        <div class="error-message">{{ $errors->first('email') }}</div>
+                        <div class="error-message">{{ $message }}</div>
                         @enderror
                     </div>
                     <div class="input-wrap">
                         <input type="password" class="input-field" placeholder="Пароль" name="password" required>
                         @error('password')
-                        <div class="error-message">{{ $errors->first('password') }}</div>
+                        <div class="error-message">{{ $message }}</div>
                         @enderror
                     </div>
                     <div class="input-wrap">
@@ -40,7 +47,7 @@
                             required
                         >
                         @error('confirm_password')
-                        <div class="error-message">{{ $errors->first('confirm_password') }}</div>
+                        <div class="error-message">{{ $message }}</div>
                         @enderror
                     </div>
 

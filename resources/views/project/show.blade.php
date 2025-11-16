@@ -341,7 +341,7 @@
             const editModal = document.getElementById("editListModal");
             const confirmAddBtn = document.getElementById("confirmEditList");
             const deleteListBtn = document.getElementById('deleteList');
-            const routeTpl = '{{ route('tasklist.update', [$current_project, '#tasklistId#']) }}';
+            const routeTpl = '{{ route('tasklist.update', [$current_project, '__tasklistId__']) }}';
             const newListName = document.getElementById("newlistName");
             const oldListName = document.getElementById('oldlistName');
 
@@ -360,7 +360,7 @@
             // Открыть и заполнить модалку
             function editTasklist(tasklistId) {
 
-                route = routeTpl.replace('#tasklistId#', tasklistId);
+                route = routeTpl.replace('__tasklistId__', tasklistId);
                 tasklistHeader = document.getElementById('tasklist' + tasklistId + 'Header');
                 let currentListName = tasklistHeader.textContent;
 
@@ -634,11 +634,11 @@
             usersList.addEventListener('click', (e)=>{
                 const selectedUser = e.target.closest('.participant');
                 const userId = selectedUser?.dataset.userId;
-                const userRouteTpl = '{{ route('user-info.show', '#userId#') }}';
+                const userRouteTpl = '{{ route('user-info.show', '__userId__') }}';
                 let route;
 
                 if (userId) {
-                    route = userRouteTpl.replace('#userId#', userId);
+                    route = userRouteTpl.replace('__userId__', userId);
                     window.location.href = route;
                 }
             })
