@@ -6,7 +6,6 @@ use App\Http\Requests\SaveUserInfoRequest;
 use App\Http\Requests\TmpSaveUserRequest;
 use App\Models\User;
 use App\Models\UserInfo;
-use App\Services\Validators\UserInfoValidator;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -19,7 +18,6 @@ class RegistrationController extends Controller
 
     public function tmpSaveUser(TmpSaveUserRequest $request)
     {
-
         $validate_data = $request->validated();
 
         $validate_data['password'] = bcrypt($validate_data['password']);
@@ -63,7 +61,6 @@ class RegistrationController extends Controller
         $validate_data['user_id'] = $user->id;
 
         UserInfo::create($validate_data);
-
 
         Auth::login($user);
 

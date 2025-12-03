@@ -32,12 +32,6 @@ class UserController extends Controller
      */
     public function store(StoreUserRequest $request)
     {
-//        $validate_data = $request->validate([
-//            'email' => 'required|email|unique:users|max:30',
-//            'password' => 'required|min:8|max:25',
-//            'confirm_password' => 'required|same:password',
-//        ]);
-
         $validate_data = $request->validated();
 
         $validate_data['password'] = Hash::make($validate_data['password']);

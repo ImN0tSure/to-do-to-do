@@ -1,5 +1,7 @@
 <?php
 
+use App\Http\Controllers\Api\RegistrationController;
+use App\Http\Controllers\Api\ProjectController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -14,6 +16,22 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
-    return $request->user();
+Route::group(['middleware' => 'auth:sanctum'], function () {
+    Route::get('/user', function (Request $request) {
+        if (!$request->user()) {
+            return response()->json(['error' => 'Unauthorized'], 401);
+        }
+        return $request->user();
+    });
+    Route::get('/projects', [ProjectController::class, 'index']);
 });
+
+Route::post('tmp-save-user', [RegistrationController::class, 'tmpSaveUser']);
+Route::post('register-user', [RegistrationController::class, 'registerUser']);
+
+
+//Route::get('/test', function (Request $request) {
+//   return response()->json([
+//      'message' => 'hello'
+//   ]);
+//});

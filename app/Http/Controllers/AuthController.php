@@ -19,11 +19,29 @@ class AuthController extends Controller
 
         if (Auth::attempt($credentials)) {
             $request->session()->regenerate();
-            return redirect()->intended('/cabinet');
+
+            if ($request->expectsJson()) {
+                return response()->json([
+                    'success' => true,
+                    'user' => $request->user(),
+                    'session' => session()->getId(),
+                ]);
+            } else {
+                return redirect()->intended('/cabinet');
+            }
+
         }
-        return back()->withErrors([
-            'login' => 'Неверные имя пользователя или пароль.'
-        ]);
+
+        if ($request->expectsJson()) {
+            return response()->json([
+                "success" => false,
+                'message' => 'Неверные имя пользователя или пароль.'
+            ], 422);
+        } else {
+            return back()->withErrors([
+                'login' => 'Неверные имя пользователя или пароль.'
+            ]);
+        }
     }
 
     public function logout(Request $request)
@@ -32,6 +50,13 @@ class AuthController extends Controller
         $request->session()->invalidate();
         $request->session()->regenerate();
 
-        return redirect('/login');
+        if ($request->expectsJson()) {
+            return response()->json([
+                'success' => true,
+                'message' => 'Выход выполнен.',
+            ]);
+        } else {
+            return redirect('/login');
+        }
     }
 }

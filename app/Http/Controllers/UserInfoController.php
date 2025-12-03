@@ -4,11 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\SaveUserInfoRequest;
 use App\Models\UserInfo;
-use App\Services\Validators\UserInfoValidator;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-
-use function Laravel\Prompts\error;
 
 class UserInfoController extends Controller
 {
@@ -67,7 +64,6 @@ class UserInfoController extends Controller
      */
     public function update(SaveUserInfoRequest $request)
     {
-
         $validate_data = $request->validated();
 
         if ($request->hasFile('avatar_img')) {

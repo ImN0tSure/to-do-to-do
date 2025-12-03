@@ -72,7 +72,8 @@ return [
     |
     */
 
-    'connection' => env('SESSION_CONNECTION'),
+    'connection' => env('SESSION_CONNECTION', 'default'),
+    'prefix' => env('SESSION_PREFIX', 'laravel_session'),
 
     /*
     |--------------------------------------------------------------------------
