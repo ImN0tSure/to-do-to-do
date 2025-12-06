@@ -4,6 +4,7 @@ use App\Http\Controllers\Api\RegistrationController;
 use App\Http\Controllers\Api\ProjectController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\Api\TaskController;
 
 /*
 |--------------------------------------------------------------------------
@@ -24,14 +25,9 @@ Route::group(['middleware' => 'auth:sanctum'], function () {
         return $request->user();
     });
     Route::get('/projects', [ProjectController::class, 'index']);
+    Route::get('/tasks-for-today', [TaskController::class, 'index']);
 });
 
 Route::post('tmp-save-user', [RegistrationController::class, 'tmpSaveUser']);
 Route::post('register-user', [RegistrationController::class, 'registerUser']);
 
-
-//Route::get('/test', function (Request $request) {
-//   return response()->json([
-//      'message' => 'hello'
-//   ]);
-//});
