@@ -17,10 +17,15 @@ class ProjectController extends Controller
             ->pluck('project_id')
             ->toArray();
 
-        $projects = Project::whereIn('id', $project_ids)->select('url', 'name')->get();
+        $projects = Project::whereIn('id', $project_ids)->select('url', 'name', 'description')->get();
         return response()->json([
             'success' => true,
             'projects' => $projects
         ]);
+    }
+
+    public function show(Request $request, $project_url): \Illuminate\Http\JsonResponse
+    {
+        $project_data = Project::where('url', $project_url)->firstOrFail();
     }
 }

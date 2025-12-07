@@ -43,6 +43,7 @@ Route::group(['middleware' => 'guest'], function () {
 
 Route::group(['middleware' => 'auth'], function () {
     Route::get('logout', [AuthController::class, 'logout'])->name('logout');
+
     Route::group(['middleware' => 'project.participant'], function () {
         Route::get('project/create', [ProjectController::class, 'create'])
             ->withoutMiddleware('project.participant')
@@ -59,6 +60,7 @@ Route::group(['middleware' => 'auth'], function () {
         Route::delete('project/{project}/exclude-participants', [ProjectController::class, 'excludeParticipants'])
         ->name('project.exclude-participants');
     });
+
     Route::get('cabinet', [CabinetController::class, 'index'])
         ->name('cabinet');
     Route::resource('user', UserController::class);

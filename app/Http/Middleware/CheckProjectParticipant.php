@@ -19,8 +19,7 @@ class CheckProjectParticipant
     public function handle(Request $request, Closure $next): Response
     {
         $user_id = Auth::id();
-        $path = $request->path();
-        $project_url = GetProjectUrl::fromPath($path);
+        $project_url = $request->project;
 
         if (CheckParticipant::project($project_url, $user_id)) {
             return $next($request);
