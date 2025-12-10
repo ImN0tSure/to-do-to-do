@@ -3,17 +3,14 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Models\Project;
 use App\Services\HowMuchTime;
-use App\Services\TasksForToday;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 
-class TaskController extends Controller
+class ProjectTaskController extends Controller
 {
-    public function index() {
-        $user_id = Auth::id();
-
-        $tasks = TasksForToday::getList($user_id);
+    public function index(Request $request, $project_url) {
+        $tasks = Project::where('url', $project_url)->first()->tasks()->get();
 
         $data = [];
 
@@ -25,12 +22,13 @@ class TaskController extends Controller
                 'priority' => $task->priority,
                 'projectUrl' => $task->project->url,
                 'time' => HowMuchTime::expiresIn($task->end_date),
+                'tasklist_id' => $task->tasklist_id,
             ];
         }
 
         return response()->json([
             'success' => true,
-            'tasks' => $data
+            'tasks' => $data,
         ]);
     }
 }
