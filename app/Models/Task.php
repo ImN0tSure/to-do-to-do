@@ -14,7 +14,16 @@ class Task extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['name', 'description', 'executor_id', 'begin_date', 'end_date', 'priority', 'tasklist_id'];
+    protected $fillable = [
+        'name',
+        'description',
+        'executor_id',
+        'begin_date',
+        'end_date',
+        'priority',
+        'tasklist_id',
+        'in_progress'
+    ];
     public $timestamps = false;
 
     public function executor(): HasOne

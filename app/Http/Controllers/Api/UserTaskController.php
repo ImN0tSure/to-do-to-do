@@ -10,7 +10,7 @@ use Illuminate\Support\Facades\Auth;
 
 class UserTaskController extends Controller
 {
-    public function index() {
+    public function index(): \Illuminate\Http\JsonResponse {
         $user_id = Auth::id();
 
         $tasks = TasksForToday::getList($user_id);
