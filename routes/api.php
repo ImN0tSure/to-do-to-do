@@ -39,6 +39,7 @@ Route::group(['middleware' => 'auth:sanctum'], function () {
         Route::get('/project/{project}/tasks', [ProjectTaskController::class, 'index']);
         Route::get('/project/{project}/tasks/{task}', [ProjectTaskController::class, 'show']);
         Route::put('/project/{project}/tasks/{task}', [ProjectTaskController::class, 'update']);
+        Route::post('/project/{project}/tasks', [ProjectTaskController::class, 'store']);
     });
 
 });

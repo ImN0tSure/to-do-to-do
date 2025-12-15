@@ -4,8 +4,10 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\UpdateTaskRequest;
+use App\Http\Requests\StoreTaskRequest;
 use App\Models\Project;
 use App\Models\Task;
+use App\Services\GetProjectId;
 use App\Services\HowMuchTime;
 use Illuminate\Http\Request;
 
@@ -32,6 +34,27 @@ class ProjectTaskController extends Controller
         return response()->json([
             'success' => true,
             'tasks' => $data,
+        ]);
+    }
+
+    /* Вынести одинаковые действия в контроллерах в сервисы */
+    public function store(StoreTaskRequest $request, $project_url): \Illuminate\Http\JsonResponse
+    {
+        $project_id = GetProjectId::byUrl($project_url);
+
+        $this->authorize('create', [Task::class, $project_id]);
+
+        $validate_data = $request->validated();
+
+        $validate_data['begin_date'] = date('Y-m-d H:i');
+        $validate_data['end_date'] .= ' ' . $validate_data['end_time'];
+        unset($validate_data['end_time']);
+
+        Task::create($validate_data);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Задача успешно создана.',
         ]);
     }
 
