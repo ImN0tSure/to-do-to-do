@@ -7,6 +7,7 @@ use App\Http\Requests\SaveProjectRequest;
 use App\Models\Notification;
 use App\Models\Project;
 use App\Models\ProjectParticipant;
+use App\Services\GenerateProjectUrl;
 use App\Services\GetParticipantStatus;
 use App\Services\GetProjectId;
 use Illuminate\Http\Request;
@@ -46,15 +47,15 @@ class ProjectController extends Controller
     {
         $validate_data = $request->validated();
 
-        do {
-            $validate_data['url'] = Str::random(10);
-        } while (Project::where('url', $validate_data['url'])->first() != null);
+        $validate_data['url'] = GenerateProjectUrl::generate();
 
         $validate_data['begin_date'] = date('Y-m-d H:i:s');
 
+        $new_project = Project::create($validate_data);
+
         $participate = [
             'user_id' => Auth::id(),
-            'project_id' => Project::createProject($validate_data),
+            'project_id' => $new_project->id,
             'status' => 1,
         ];
 

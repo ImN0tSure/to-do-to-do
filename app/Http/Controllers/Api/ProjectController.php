@@ -3,9 +3,10 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\SaveProjectRequest;
 use App\Models\Project;
 use App\Models\ProjectParticipant;
-use Illuminate\Http\Request;
+use App\Services\GenerateProjectUrl;
 use Illuminate\Support\Facades\Auth;
 
 class ProjectController extends Controller
@@ -24,8 +25,26 @@ class ProjectController extends Controller
         ]);
     }
 
-    public function show(Request $request, $project_url): \Illuminate\Http\JsonResponse
-    {
-        $project_data = Project::where('url', $project_url)->firstOrFail();
+    public function store(SaveProjectRequest $request) {
+
+        $validate_data = $request->validated();
+
+        $validate_data['url'] = GenerateProjectUrl::generate();
+        $validate_data['begin_date'] = date('Y-m-d H:i:s');
+
+        $new_project = Project::create($validate_data);
+
+        $participate = [
+            'user_id' => Auth::id(),
+            'project_id' => $new_project->id,
+            'status' => 1
+        ];
+
+        ProjectParticipant::create($participate);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Проект создан.'
+        ]);
     }
 }

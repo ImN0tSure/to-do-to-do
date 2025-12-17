@@ -14,7 +14,7 @@ class Project extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['name', 'description'];
+    protected $fillable = ['name', 'description', 'url', 'begin_date', 'end_date'];
     public $timestamps = false;
 
     public function getRouteKeyName()

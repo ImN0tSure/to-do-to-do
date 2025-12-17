@@ -30,10 +30,10 @@ Route::group(['middleware' => 'auth:sanctum'], function () {
 
     Route::get('/tasks-for-today', [UserTaskController::class, 'index']);
 
-    Route::get('/projects', [ProjectController::class, 'index']);
+    Route::get('/project', [ProjectController::class, 'index']);
+    Route::post('/project', [ProjectController::class, 'store']);
 
     Route::group(['middleware' => 'project.participant'], function () {
-        Route::get('/projects/{project}', [ProjectController::class, 'show']);
         Route::get('/project/{project}/participants', [ProjectParticipantController::class, 'index']);
         Route::get('/project/{project}/tasklists', [TasklistController::class, 'index']);
         Route::get('/project/{project}/tasks', [ProjectTaskController::class, 'index']);
