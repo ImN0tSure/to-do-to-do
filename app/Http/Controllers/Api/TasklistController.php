@@ -42,4 +42,20 @@ class TasklistController extends Controller
             ]
         ]);
     }
+
+    public function update(StoreTasklistRequest $request, $project_url, $tasklist_id) {
+        $project_id = GetProjectId::byUrl($project_url);
+        $this->authorize('update', [Tasklist::class, $project_id]);
+
+        $validate_data = $request->validated();
+        unset($validate_data['oldName']);
+
+        $tasklist = Tasklist::findOrFail($tasklist_id);
+        $tasklist->update($validate_data);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Список задач переименован.'
+        ]);
+    }
 }

@@ -39,7 +39,12 @@ class UpdateTasklistRequest extends FormRequest
     public function messages(): array
     {
         return [
-
+            'name.required' => 'Поле с названием обязательно.',
+            'name.max' => 'Максимальная длина 255 символов.',
+            'name.min' => 'Минимальная длина 3 символа.',
+            'oldName.required' => 'Поле со старым названием обязательно.',
+            'oldName.max' => 'Максимальная длина 255 символов.',
+            'oldName.min' => 'Минимальная длина 3 символа.',
         ];
     }
 }
