@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Models\Task;
 use App\Models\Tasklist;
 use App\Services\GetProjectId;
 use Illuminate\Http\Request;
@@ -56,6 +57,19 @@ class TasklistController extends Controller
         return response()->json([
             'success' => true,
             'message' => 'Список задач переименован.'
+        ]);
+    }
+
+    public function destroy($project_url, $tasklist_id) {
+        $project_id = GetProjectId::byUrl($project_url);
+        $this->authorize('delete', [Tasklist::class, $project_id]);
+
+        Tasklist::destroy($tasklist_id);
+        Task::where('tasklist_id', $tasklist_id)->delete();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Список задач вместе с задачами успешно удалён.'
         ]);
     }
 }

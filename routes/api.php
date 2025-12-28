@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\UserTaskController;
 use App\Http\Controllers\Api\ProjectParticipantController;
+use App\Http\Controllers\Api\InvitationController;
 
 /*
 |--------------------------------------------------------------------------
@@ -35,14 +36,16 @@ Route::group(['middleware' => 'auth:sanctum'], function () {
 
     Route::group(['middleware' => 'project.participant'], function () {
         Route::get('/project/{project}/participants', [ProjectParticipantController::class, 'index']);
-        Route:: get('/project/{project}/participants/{participant}', [ProjectParticipantController::class, 'show']);
+        Route::get('/project/{project}/participants/{participant}', [ProjectParticipantController::class, 'show']);
         Route::get('/project/{project}/tasklists', [TasklistController::class, 'index']);
         Route::post('/project/{project}/tasklists', [TasklistController::class, 'store']);
         Route::put('/project/{project}/tasklists/{tasklist}', [TasklistController::class, 'update']);
+        Route::delete('/project/{project}/tasklists/{tasklist}', [TasklistController::class, 'destroy']);
         Route::get('/project/{project}/tasks', [ProjectTaskController::class, 'index']);
         Route::get('/project/{project}/tasks/{task}', [ProjectTaskController::class, 'show']);
         Route::put('/project/{project}/tasks/{task}', [ProjectTaskController::class, 'update']);
         Route::post('/project/{project}/tasks', [ProjectTaskController::class, 'store']);
+        Route::post('/project/{project}/invite-participant', [InvitationController::class, 'create']);
     });
 
 });

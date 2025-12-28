@@ -55,22 +55,29 @@ class CreateInvitationRequest extends FormRequest
             $email = $this->input('email');
             $project_url = $this->input('project_url');
 
-            $invitee_id = User::where('email', $email)->first()->id;
-            $project_id = GetProjectId::byUrl($project_url);
+            $invitee = User::where('email', $email)->first();
 
-            if (!checkParticipant::project($this->project_url, Auth::id())) {
-                $validator->errors()->add('project_url', 'Вы не состоите в проекте');
-            } elseif (checkParticipant::project($this->project_url, $invitee_id)) {
-                $validator->errors()->add('project_url', 'Пользователь уже состоит в проекте');
-            } elseif (Invitation::where([
-                'project_id' => $project_id,
-                'invitee_id' => $invitee_id,
-                'is_accepted' => null
-            ])->exists()) {
-                $validator->errors()->add(
-                    'project_url',
-                    'Пользователь уже получил приглашения, но ещё ответил на него'
-                );
+            if(!$invitee) {
+                return;
+            } else {
+                $invitee_id = $invitee->id;
+
+                $project_id = GetProjectId::byUrl($project_url);
+
+                if (!checkParticipant::project($this->project_url, Auth::id())) {
+                    $validator->errors()->add('project_url', 'Вы не состоите в проекте');
+                } elseif (checkParticipant::project($this->project_url, $invitee_id)) {
+                    $validator->errors()->add('project_url', 'Пользователь уже состоит в проекте');
+                } elseif (Invitation::where([
+                    'project_id' => $project_id,
+                    'invitee_id' => $invitee_id,
+                    'is_accepted' => null
+                ])->exists()) {
+                    $validator->errors()->add(
+                        'project_url',
+                        'Пользователь уже получил приглашения, но ещё ответил на него'
+                    );
+                }
             }
         });
     }
