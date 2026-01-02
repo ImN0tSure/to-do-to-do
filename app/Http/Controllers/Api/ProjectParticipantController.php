@@ -3,12 +3,16 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\ExcludeParticipantsRequest;
+use App\Models\Notification;
 use App\Models\Project;
 use App\Models\ProjectParticipant;
 use App\Models\UserInfo;
 use App\Services\GetProjectId;
+use App\Services\RemoveUserProjectData;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\DB;
 
 class ProjectParticipantController extends Controller
 {
@@ -16,7 +20,7 @@ class ProjectParticipantController extends Controller
     {
         $project_id = GetProjectId::byUrl($project_url);
 
-        $participants = Cache::remember("project:{$project_id}:participants", 600, function () use ($project_id) {
+        $participants = Cache::remember("project:{$project_url}:participants", 60, function () use ($project_id) {
             return Project::where('id', $project_id)
                 ->first()
                 ->participants()
@@ -49,5 +53,36 @@ class ProjectParticipantController extends Controller
                 'message' => 'Пользователь не состоит в проекте.'
             ]);
         }
+    }
+
+    public function excludeParticipants(ExcludeParticipantsRequest $request, string $project_url): \Illuminate\Http\JsonResponse
+    {
+        $validate_data = $request->validated();
+
+        $ids = $validate_data['ids'];
+
+        $response_data = [];
+
+        foreach ($ids as $user_id) {
+            $response = RemoveUserProjectData::remove($project_url, $user_id);
+
+            if ($response) {
+                $response_data[$user_id] = [
+                    'success' => true,
+                ];
+            } else {
+                $response_data[$user_id] = [
+                    'success' => false,
+                    'message' => $response,
+                ];
+            }
+        }
+
+        Cache::delete("project:{$project_url}:participants");
+
+        return response()->json([
+            'success' => true,
+            'response_data' => $response_data
+        ]);
     }
 }

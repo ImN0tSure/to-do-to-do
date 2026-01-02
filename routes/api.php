@@ -37,6 +37,7 @@ Route::group(['middleware' => 'auth:sanctum'], function () {
     Route::group(['middleware' => 'project.participant'], function () {
         Route::get('/project/{project}/participants', [ProjectParticipantController::class, 'index']);
         Route::get('/project/{project}/participants/{participant}', [ProjectParticipantController::class, 'show']);
+        Route::put('/project/{project}/participants/exclude', [ProjectParticipantController::class, 'excludeParticipants']);
         Route::get('/project/{project}/tasklists', [TasklistController::class, 'index']);
         Route::post('/project/{project}/tasklists', [TasklistController::class, 'store']);
         Route::put('/project/{project}/tasklists/{tasklist}', [TasklistController::class, 'update']);
