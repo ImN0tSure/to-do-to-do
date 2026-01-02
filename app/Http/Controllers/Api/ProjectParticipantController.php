@@ -11,6 +11,7 @@ use App\Models\UserInfo;
 use App\Services\GetProjectId;
 use App\Services\RemoveUserProjectData;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 
@@ -51,6 +52,24 @@ class ProjectParticipantController extends Controller
             return response()->json([
                 'success' => false,
                 'message' => 'Пользователь не состоит в проекте.'
+            ]);
+        }
+    }
+
+    public function quitProject(Request $request, string $project_url): \Illuminate\Http\JsonResponse {
+        $user_id = Auth::id();
+
+        $response = RemoveUserProjectData::remove($project_url, $user_id);
+
+        if ($response) {
+            return response()->json([
+                'success' => true,
+                'message' => 'Вы успешно покинули проект.'
+            ]);
+        } else {
+            return response()->json([
+                'success' => false,
+                'message' => $response
             ]);
         }
     }
