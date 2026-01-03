@@ -9,7 +9,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\UserTaskController;
 use App\Http\Controllers\Api\ProjectParticipantController;
 use App\Http\Controllers\Api\InvitationController;
-
+use App\Http\Controllers\Api\NotificationController;
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -34,6 +34,9 @@ Route::group(['middleware' => 'auth:sanctum'], function () {
     Route::get('/project', [ProjectController::class, 'index']);
     Route::post('/project', [ProjectController::class, 'store']);
 
+    Route::get('/notifications', [NotificationController::class, 'index']);
+    Route::delete('/notifications/{id}', [NotificationController::class, 'destroy']);
+
     Route::group(['middleware' => 'project.participant'], function () {
         Route::get('/project/{project}/participants', [ProjectParticipantController::class, 'index']);
         Route::get('/project/{project}/participants/{participant}', [ProjectParticipantController::class, 'show']);
@@ -49,6 +52,9 @@ Route::group(['middleware' => 'auth:sanctum'], function () {
         Route::post('/project/{project}/tasks', [ProjectTaskController::class, 'store']);
         Route::post('/project/{project}/invite-participant', [InvitationController::class, 'create']);
     });
+
+    Route::put('/invitation/accept', [InvitationController::class, 'accept']);
+    Route::put('/invitation/decline', [InvitationController::class, 'decline']);
 
 });
 
