@@ -4,6 +4,7 @@ use App\Http\Controllers\Api\ProjectTaskController;
 use App\Http\Controllers\Api\RegistrationController;
 use App\Http\Controllers\Api\ProjectController;
 use App\Http\Controllers\Api\TasklistController;
+use App\Http\Controllers\Api\UserInfoController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\UserTaskController;
@@ -28,6 +29,9 @@ Route::group(['middleware' => 'auth:sanctum'], function () {
         }
         return $request->user();
     });
+
+    Route::get('/userinfo', [UserInfoController::class, 'show']);
+    Route::put('/userinfo', [UserInfoController::class, 'update']);
 
     Route::get('/tasks-for-today', [UserTaskController::class, 'index']);
 

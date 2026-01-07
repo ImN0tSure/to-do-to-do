@@ -60,8 +60,8 @@
                                     @endauth
                                 ">
                         </div>
-                        <input type="file" id="avatarUpload" name="avatar_img" accept="image/*">
-                        @error('avatar_img')
+                        <input type="file" id="avatarUpload" name="avatar_file" accept="image/*">
+                        @error('avatar_file')
                         <div class="error-message">{{ $message }}</div>
                         @enderror
                     </div>

@@ -22,7 +22,7 @@ class SaveUserInfoRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'avatar_img' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048|bail',
+            'avatar_file' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048|bail',
             'surname' => 'required|string|max:20|bail',
             'name' => 'required|string|max:20|bail',
             'patronymic' => 'nullable|string|max:20|bail',
@@ -35,12 +35,12 @@ class SaveUserInfoRequest extends FormRequest
     public function messages(): array
     {
         return [
-            'avatar_img.mimes' => 'Поддерживаются следующие форматы: jpeg, png, jpg, gif, svg',
-            'avatar_img.max' => 'Максимальный размер 2048 байт',
-            'avatar_img.image' => 'Вставьте картинку',
-            'surname.required' => 'Это поле обзяательно для заполнения',
+            'avatar_file.mimes' => 'Поддерживаются следующие форматы: jpeg, png, jpg, gif, svg',
+            'avatar_file.max' => 'Максимальный размер 2048 байт',
+            'avatar_file.image' => 'Вставьте картинку',
+            'surname.required' => 'Фамилия обзяательна для заполнения',
             'surname.max' => 'Максимальная длина 20 символов',
-            'name.required' => 'Это поле обзяательно для заполнения',
+            'name.required' => 'Имя обзяательно для заполнения',
             'name.max' => 'Максимальная длина 20 символов',
             'patronymic.max' => 'Максимальная длина 20 символов',
             'phone.max' => 'Максимальная длина 20 символов',

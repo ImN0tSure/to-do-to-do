@@ -66,8 +66,8 @@ class UserInfoController extends Controller
     {
         $validate_data = $request->validated();
 
-        if ($request->hasFile('avatar_img')) {
-            $file = $request->file('avatar_img');
+        if ($request->hasFile('avatar_file')) {
+            $file = $request->file('avatar_file');
             $file_name = 'user-' . Auth::id() . '-avatar' . '.' . $file->getClientOriginalExtension();
             $file->move(public_path('img/avatars/'), $file_name);
             $path = '/img/avatars/' . $file_name;

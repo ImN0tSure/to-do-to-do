@@ -51,8 +51,8 @@ class RegistrationController extends Controller
 
         $user_data = json_decode($data, true);
 
-        if($request->hasFile('avatar_img')) {
-            $path = SaveImg::userAvatar($request->file('avatar_img'));
+        if($request->hasFile('avatar_file')) {
+            $path = SaveImg::userAvatar($request->file('avatar_file'));
         } else {
             $path = '/img/avatars/to-do.png';
         }
