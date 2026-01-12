@@ -3,13 +3,16 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests\UpdateTaskRequest;
 use App\Http\Requests\StoreTaskRequest;
+use App\Http\Requests\UpdateTaskRequest;
 use App\Models\Project;
 use App\Models\Task;
 use App\Services\GetProjectId;
 use App\Services\HowMuchTime;
 use Illuminate\Http\Request;
+use Illuminate\Support\Arr;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Gate;
 
 class ProjectTaskController extends Controller
 {
@@ -42,7 +45,7 @@ class ProjectTaskController extends Controller
     {
         $project_id = GetProjectId::byUrl($project_url);
 
-        $this->authorize('create', [Task::class, $project_id]);
+        Gate::authorize('task.create', $project_id);
 
         $validate_data = $request->validated();
 
@@ -89,10 +92,37 @@ class ProjectTaskController extends Controller
             unset($validate_data['end_time']);
         }
 
+
+
         $validate_data['in_progress'] = !!$validate_data['in_progress'];
 
+
+        $project_id = GetProjectId::byUrl($project_url);
+
+        $allowed = [];
+
+        if (Gate::allows('task.update.tasklist', $project_id)) {
+            $allowed[] = 'tasklist_id';
+        }
+
+        if (Gate::allows('task.update.executor.self', $project_id)) {
+            if ($validate_data['executor_id'] == Auth::id() || $validate_data['executor_id'] == null) {
+                $allowed[] = 'executor_id';
+            }
+        }
+
+        if (Gate::allows('task.update.status', $project_id)) {
+            $allowed[] = 'in_progress';
+        }
+
+        if (Gate::allows('task.update', $project_id)) {
+            $allowed = array_keys($validate_data);
+        }
+
         $task = Task::findOrFail($task_id);
-        $task->update($validate_data);
+        $task->update(
+            Arr::only($validate_data, $allowed)
+        );
 
         return response()->json([
             'success' => true,

@@ -26,54 +26,30 @@ class UpdateTaskRequest extends FormRequest
     {
         $project_url = $this->route('project');
         $project_id = GetProjectId::byUrl($project_url);
-
-        $isExecutor = isStatusHigherThan::executor($project_id);
-
-        if ($isExecutor) {
-            return [
-                'name' => 'required|max:255|min:3',
-                'description' => 'required|max:1500',
-                'executor_id' => [
-                    'nullable',
-                    'integer',
-                    Rule::exists('project_participants', 'user_id')
-                        ->where(function ($query) use ($project_id) {
-                            $query->where('project_id', $project_id);
-                        })
-                ],
-                'tasklist_id' => [
-                    'required',
-                    'integer',
-                    Rule::exists('tasklists', 'id')
-                        ->where(function ($query) use ($project_id) {
-                            $query->where('project_id', $project_id);
-                        }),
-                ],
-                'end_date' => 'required|date',
-                'end_time' => 'required|date_format:H:i',
-                'priority' => 'integer|required|min:1|max:3',
-                'in_progress' => 'boolean'
-            ];
-        } else {
-            return [
-                'executor_id' => [
-                    'nullable',
-                    'integer',
-                    Rule::exists('project_participants', 'user_id')
-                        ->where(function ($query) use ($project_id) {
-                            $query->where('project_id', $project_id);
-                        })
-                ],
-                'tasklist_id' => [
-                    'required',
-                    'integer',
-                    Rule::exists('tasklists', 'id')
-                        ->where(function ($query) use ($project_id) {
-                            $query->where('project_id', $project_id);
-                        }),
-                ]
-            ];
-        }
+        return [
+            'name' => 'required|max:255|min:3',
+            'description' => 'required|max:1500',
+            'executor_id' => [
+                'nullable',
+                'integer',
+                Rule::exists('project_participants', 'user_id')
+                    ->where(function ($query) use ($project_id) {
+                        $query->where('project_id', $project_id);
+                    })
+            ],
+            'tasklist_id' => [
+                'required',
+                'integer',
+                Rule::exists('tasklists', 'id')
+                    ->where(function ($query) use ($project_id) {
+                        $query->where('project_id', $project_id);
+                    }),
+            ],
+            'end_date' => 'required|date',
+            'end_time' => 'required|date_format:H:i',
+            'priority' => 'integer|required|min:1|max:3',
+            'in_progress' => 'boolean'
+        ];
     }
 
     public function messages(): array

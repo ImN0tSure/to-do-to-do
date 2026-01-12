@@ -8,6 +8,7 @@ use App\Models\Tasklist;
 use App\Services\GetProjectId;
 use Illuminate\Http\Request;
 use App\Http\Requests\StoreTasklistRequest;
+use Illuminate\Support\Facades\Gate;
 
 class TasklistController extends Controller
 {
@@ -28,7 +29,7 @@ class TasklistController extends Controller
 
         $project_id = GetProjectId::byUrl($project_url);
 
-        $this->authorize('create', [Tasklist::class, $project_id]);
+        Gate::authorize('tasklist.create', [Tasklist::class, $project_id]);
 
         $validate_data['project_id'] = $project_id;
 
@@ -46,7 +47,7 @@ class TasklistController extends Controller
 
     public function update(StoreTasklistRequest $request, $project_url, $tasklist_id) {
         $project_id = GetProjectId::byUrl($project_url);
-        $this->authorize('update', [Tasklist::class, $project_id]);
+        Gate::authorize('tasklist.update', $project_id);
 
         $validate_data = $request->validated();
         unset($validate_data['oldName']);
@@ -62,7 +63,7 @@ class TasklistController extends Controller
 
     public function destroy($project_url, $tasklist_id) {
         $project_id = GetProjectId::byUrl($project_url);
-        $this->authorize('delete', [Tasklist::class, $project_id]);
+        Gate::authorize('tasklist.delete', [Tasklist::class, $project_id]);
 
         Tasklist::destroy($tasklist_id);
         Task::where('tasklist_id', $tasklist_id)->delete();

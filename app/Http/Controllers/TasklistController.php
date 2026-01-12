@@ -4,13 +4,10 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\StoreTasklistRequest;
 use App\Http\Requests\UpdateTasklistRequest;
-use App\Models\Project;
 use App\Models\Tasklist;
-use App\Services\GetParticipantStatus;
 use App\Services\GetProjectId;
-use http\Env\Response;
 use Illuminate\Http\Request;
-use Illuminate\Validation\Rule;
+use Illuminate\Support\Facades\Gate;
 
 class TasklistController extends Controller
 {
@@ -48,7 +45,7 @@ class TasklistController extends Controller
 
         $project_id = GetProjectId::byUrl($project_url);
 
-        $this->authorize('create', [Tasklist::class, $project_id]);
+        Gate::authorize('tasklist.create', [$project_id]);
 
         $validate_data['project_id'] = $project_id;
 
@@ -105,7 +102,7 @@ class TasklistController extends Controller
     public function update(UpdateTasklistRequest $request, string $project_url, string $tasklist_id)
     {
         $project_id = GetProjectId::byUrl($project_url);
-        $this->authorize('update', [Tasklist::class, $project_id]);
+        Gate::authorize('tasklist.update', [$project_id]);
 
         $validate_data = $request->validated();
         unset($validate_data['oldName']);
@@ -127,6 +124,9 @@ class TasklistController extends Controller
      */
     public function destroy(string $project_url, string $tasklist_id)
     {
+        $project_id = GetProjectId::byUrl($project_url);
+        Gate::authorize('tasklist.delete', [$project_id]);
+
         $tasklist = Tasklist::where('project_id', GetProjectId::byUrl($project_url))
             ->where('id', $tasklist_id)
             ->with(['tasks.taskParticipantRecord'])

@@ -14,6 +14,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Gate;
 
 class ProjectParticipantController extends Controller
 {
@@ -76,6 +77,9 @@ class ProjectParticipantController extends Controller
 
     public function excludeParticipants(ExcludeParticipantsRequest $request, string $project_url): \Illuminate\Http\JsonResponse
     {
+        $project_id = GetProjectId::byUrl($project_url);
+        Gate::authorize('project.participant.exclude', $project_id);
+
         $validate_data = $request->validated();
 
         $ids = $validate_data['ids'];

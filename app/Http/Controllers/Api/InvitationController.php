@@ -12,6 +12,7 @@ use App\Models\User;
 use App\Services\GetProjectId;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Gate;
 
 class InvitationController extends Controller
 {
@@ -19,6 +20,8 @@ class InvitationController extends Controller
     {
         $invitee_id = User::where('email', $request->email)->first()->id;
         $project_id = GetProjectId::byUrl($request->project_url);
+
+        Gate::authorize('project.participant.invite', $project_id);
 
         Invitation::create([
             'inviter_id' => Auth::id(),
