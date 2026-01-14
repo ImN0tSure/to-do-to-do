@@ -3,6 +3,7 @@
 use App\Http\Controllers\Api\ProjectTaskController;
 use App\Http\Controllers\Api\RegistrationController;
 use App\Http\Controllers\Api\ProjectController;
+use App\Http\Controllers\Api\RoleController;
 use App\Http\Controllers\Api\TasklistController;
 use App\Http\Controllers\Api\UserInfoController;
 use Illuminate\Http\Request;
@@ -55,6 +56,7 @@ Route::group(['middleware' => 'auth:sanctum'], function () {
         Route::put('/project/{project}/tasks/{task}', [ProjectTaskController::class, 'update']);
         Route::post('/project/{project}/tasks', [ProjectTaskController::class, 'store']);
         Route::post('/project/{project}/invite-participant', [InvitationController::class, 'create']);
+        Route::get('/project/{project}/role', [RoleController::class, 'index']);
     });
 
     Route::put('/invitation/accept', [InvitationController::class, 'accept']);
