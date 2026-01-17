@@ -10,6 +10,7 @@ use App\Models\ProjectParticipant;
 use App\Services\GenerateProjectUrl;
 use App\Services\GetParticipantStatus;
 use App\Services\GetProjectId;
+use App\Services\Project\CreateProjectService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cache;
@@ -43,23 +44,12 @@ class ProjectController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(SaveProjectRequest $request): \Illuminate\Http\RedirectResponse
+    public function store(SaveProjectRequest $request, CreateProjectService $project_service): \Illuminate\Http\RedirectResponse
     {
         $validate_data = $request->validated();
 
-        $validate_data['url'] = GenerateProjectUrl::generate();
+        $project_service->execute($validate_data);
 
-        $validate_data['begin_date'] = date('Y-m-d H:i:s');
-
-        $new_project = Project::create($validate_data);
-
-        $participate = [
-            'user_id' => Auth::id(),
-            'project_id' => $new_project->id,
-            'status' => 1,
-        ];
-
-        ProjectParticipant::create($participate);
         return redirect()->route('cabinet');
     }
 
@@ -114,11 +104,6 @@ class ProjectController extends Controller
     public function edit(string $url): \Illuminate\Contracts\View\Factory|\Illuminate\Foundation\Application|\Illuminate\Contracts\View\View|\Illuminate\Contracts\Foundation\Application
     {
         abort('404');
-//        $data = [
-//            'project' => Project::where('url', $url)->first()
-//        ];
-//
-//        return view('project.edit', $data);
     }
 
     /**

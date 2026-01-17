@@ -68,20 +68,18 @@ class Task extends Model
                 'event' => 'deadline',
                 'event_type' => $event_type,
             ]);
-        } else {
-            $curators = $this->project->participantRecords()->where('status', 1)->get();
-
-            $curators->map(function ($curator) use ($event_type) {
-                Notification::create(
-                    [
-                        'user_id' => $curator->user_id,
-                        'notifiable_type' => 'task_deadline',
-                        'notifiable_id' => $this->id,
-                        'event' => 'deadline',
-                        'event_type' => $event_type,
-                    ]
-                );
-            });
+            return;
         }
+
+        $curators = $this->project->participantRecords()->where('status', 1)->get();
+        $curators->map(function ($curator) use ($event_type) {
+            Notification::create([
+                'user_id' => $curator->user_id,
+                'notifiable_type' => 'task_deadline',
+                'notifiable_id' => $this->id,
+                'event' => 'deadline',
+                'event_type' => $event_type,
+            ]);
+        });
     }
 }

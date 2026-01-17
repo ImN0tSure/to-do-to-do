@@ -6,12 +6,13 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\SaveProjectRequest;
 use App\Models\Project;
 use App\Models\ProjectParticipant;
-use App\Services\GenerateProjectUrl;
+use App\Services\Project\CreateProjectService;
 use Illuminate\Support\Facades\Auth;
 
 class ProjectController extends Controller
 {
-    public function index(): \Illuminate\Http\JsonResponse {
+    public function index(): \Illuminate\Http\JsonResponse
+    {
         $user_id = Auth::id();
 
         $project_ids = ProjectParticipant::where('user_id', $user_id)
@@ -25,22 +26,13 @@ class ProjectController extends Controller
         ]);
     }
 
-    public function store(SaveProjectRequest $request) {
-
+    public function store(
+        SaveProjectRequest $request,
+        CreateProjectService $project_service
+    ): \Illuminate\Http\JsonResponse {
         $validate_data = $request->validated();
 
-        $validate_data['url'] = GenerateProjectUrl::generate();
-        $validate_data['begin_date'] = date('Y-m-d H:i:s');
-
-        $new_project = Project::create($validate_data);
-
-        $participate = [
-            'user_id' => Auth::id(),
-            'project_id' => $new_project->id,
-            'status' => 1
-        ];
-
-        ProjectParticipant::create($participate);
+        $project_service->execute($validate_data);
 
         return response()->json([
             'success' => true,

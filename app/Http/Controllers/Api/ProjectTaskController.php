@@ -9,6 +9,9 @@ use App\Models\Project;
 use App\Models\Task;
 use App\Services\GetProjectId;
 use App\Services\HowMuchTime;
+use App\Services\Task\CreateTaskService;
+use App\Services\Task\DeleteTaskService;
+use App\Services\Task\UpdateTaskService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Auth;
@@ -41,19 +44,15 @@ class ProjectTaskController extends Controller
     }
 
     /* Вынести одинаковые действия в контроллерах в сервисы */
-    public function store(StoreTaskRequest $request, $project_url): \Illuminate\Http\JsonResponse
-    {
+    public function store(
+        StoreTaskRequest $request,
+        $project_url,
+        CreateTaskService $task_service
+    ): \Illuminate\Http\JsonResponse {
         $project_id = GetProjectId::byUrl($project_url);
-
         Gate::authorize('task.create', $project_id);
 
-        $validate_data = $request->validated();
-
-        $validate_data['begin_date'] = date('Y-m-d H:i');
-        $validate_data['end_date'] .= ' ' . $validate_data['end_time'];
-        unset($validate_data['end_time']);
-
-        Task::create($validate_data);
+        $task_service->execute($request->validated());
 
         return response()->json([
             'success' => true,
@@ -83,21 +82,11 @@ class ProjectTaskController extends Controller
     public function update(
         UpdateTaskRequest $request,
         string $project_url,
-        string|int $task_id
+        string|int $task_id,
+        UpdateTaskService $task_service
     ): \Illuminate\Http\JsonResponse {
-        $validate_data = $request->validated();
-
-        if (isset($validate_data['end_date'])) {
-            $validate_data['end_date'] .= ' ' . $validate_data['end_time'];
-            unset($validate_data['end_time']);
-        }
-
-
-
-        $validate_data['in_progress'] = !!$validate_data['in_progress'];
-
-
         $project_id = GetProjectId::byUrl($project_url);
+        $validate_data = $request->validated();
 
         $allowed = [];
 
@@ -119,14 +108,31 @@ class ProjectTaskController extends Controller
             $allowed = array_keys($validate_data);
         }
 
-        $task = Task::findOrFail($task_id);
-        $task->update(
-            Arr::only($validate_data, $allowed)
+        $task_service->execute(
+            Arr::only($request->validated(), $allowed),
+            $task_id
         );
 
         return response()->json([
             'success' => true,
             'message' => 'Задача обновлена.'
         ]);
+    }
+
+    public function destroy(Request $request, DeleteTaskService $task_service): \Illuminate\Http\JsonResponse
+    {
+        $project_url = $request->project;
+        $project_id = GetProjectId::byUrl($project_url);
+
+        Gate::authorize('task.delete', $project_id);
+
+        $task_id = $request->task;
+        $task_service->execute($task_id);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Задача успешно удалена.'
+        ]);
+        /* Дописать удаление уведомлений */
     }
 }

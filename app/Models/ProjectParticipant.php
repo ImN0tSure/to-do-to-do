@@ -10,7 +10,7 @@ class ProjectParticipant extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['project_id', 'user_id', 'status'];
+    protected $fillable = ['project_id', 'user_id', 'status', 'role'];
     public $timestamps = false;
 
     public function project(): BelongsTo

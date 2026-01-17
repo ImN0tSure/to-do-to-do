@@ -36,7 +36,7 @@ class CheckDeadlines extends Command
                     'event_type' => '48'
                 ]);
             })
-            ->each(function ($task) {
+            ->each(function (Task $task) {
                 $task->createDeadlineNotification('48');
             });
 

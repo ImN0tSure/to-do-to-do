@@ -3,7 +3,6 @@
 namespace App\Http\Requests;
 
 use App\Services\GetProjectId;
-use App\Services\isStatusHigherThan;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
@@ -74,5 +73,18 @@ class UpdateTaskRequest extends FormRequest
             'priority.max' => 'Выберите приоритет из списка.',
             'in_progress.boolean' => 'Выберите статус из списка.'
         ];
+    }
+
+    protected function prepareForValidation()
+    {
+        if ($this->has(['end_date', 'end_time'])) {
+            $this->merge([
+                'end_date' => $this->end_date . ' ' . $this->end_time
+            ]);
+        }
+
+        $this->merge([
+            'in_progress' => (bool)$this->in_progress
+        ]);
     }
 }

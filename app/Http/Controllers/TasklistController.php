@@ -6,6 +6,9 @@ use App\Http\Requests\StoreTasklistRequest;
 use App\Http\Requests\UpdateTasklistRequest;
 use App\Models\Tasklist;
 use App\Services\GetProjectId;
+use App\Services\Tasklist\CreateTasklistService;
+use App\Services\Tasklist\DeleteTasklistService;
+use App\Services\Tasklist\UpdateTasklistService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
 
@@ -39,24 +42,19 @@ class TasklistController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(StoreTasklistRequest $request, $project_url)
+    public function store(StoreTasklistRequest $request, $project_url, CreateTasklistService $tasklist_service)
     {
-        $validate_data = $request->validated();
-
         $project_id = GetProjectId::byUrl($project_url);
-
         Gate::authorize('tasklist.create', [$project_id]);
 
-        $validate_data['project_id'] = $project_id;
-
-        $tasklist = Tasklist::create($validate_data);
+        $tasklist = $tasklist_service->execute($request->validated(), $project_id);
 
         return response()
             ->json([
                 'data' => [
                     'tasklist_id' => $tasklist->id
                 ],
-                'name' => $validate_data['name'],
+                'name' => $tasklist->name,
             ]);
     }
 
@@ -99,21 +97,21 @@ class TasklistController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(UpdateTasklistRequest $request, string $project_url, string $tasklist_id)
-    {
+    public function update(
+        UpdateTasklistRequest $request,
+        string $project_url,
+        string $tasklist_id,
+        UpdateTasklistService $tasklist_service
+    ) {
         $project_id = GetProjectId::byUrl($project_url);
-        Gate::authorize('tasklist.update', [$project_id]);
+        Gate::authorize('tasklist.update', $project_id);
 
-        $validate_data = $request->validated();
-        unset($validate_data['oldName']);
-
-        $tasklist = Tasklist::findOrFail($tasklist_id);
-        $tasklist->update($validate_data);
+        $tasklist = $tasklist_service->execute($request->validated(), $tasklist_id);
 
         return response()
             ->json([
                 'data' => [
-                    'newName' => $validate_data['name'],
+                    'newName' => $tasklist->name,
                 ],
                 'status' => 'success',
             ]);
@@ -122,20 +120,16 @@ class TasklistController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(string $project_url, string $tasklist_id)
+    public function destroy(string $project_url, string $tasklist_id, DeleteTasklistService $tasklist_service)
     {
         $project_id = GetProjectId::byUrl($project_url);
-        Gate::authorize('tasklist.delete', [$project_id]);
+        Gate::authorize('tasklist.delete', [Tasklist::class, $project_id]);
 
-        $tasklist = Tasklist::where('project_id', GetProjectId::byUrl($project_url))
-            ->where('id', $tasklist_id)
-            ->with(['tasks.taskParticipantRecord'])
-            ->delete();
+        $tasklist_service->execute($tasklist_id);
 
         return response()->json([
             'status' => 'success',
             'tasklist_id' => $tasklist_id,
-            'tasklist' => $tasklist,
             'message' => 'Tasklist successfully deleted',
         ]);
     }

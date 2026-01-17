@@ -9,6 +9,10 @@ use App\Models\Task;
 use App\Models\UserInfo;
 use App\Services\GetProjectId;
 use App\Services\isStatusHigherThan;
+use App\Services\Task\CreateTaskService;
+use App\Services\Task\DeleteTaskService;
+use App\Services\Task\UpdateTaskService;
+use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Gate;
 
@@ -44,19 +48,12 @@ class TaskController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(StoreTaskRequest $request, $project_url)
+    public function store(StoreTaskRequest $request, $project_url, CreateTaskService $task_service)
     {
         $project_id = GetProjectId::byUrl($project_url);
+        Gate::authorize('task.create', $project_id);
 
-        $this->authorize('create', [Task::class, $project_id]);
-
-        $validate_data = $request->validated();
-
-        $validate_data['begin_date'] = date('Y-m-d H:i');
-        $validate_data['end_date'] .= ' ' . $validate_data['end_time'];
-        unset($validate_data['end_time']);
-
-        Task::create($validate_data);
+        $task_service->execute($request->validated());
 
         return redirect()->route('project.show', $project_url);
     }
@@ -119,21 +116,39 @@ class TaskController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(UpdateTaskRequest $request, string $project_url, string|int $task_id)
-    {
-        if (Gate::denies('update', [Task::class, $task_id])) {
-            return redirect()->route('project.show', $project_url);
-        }
-
+    public function update(
+        UpdateTaskRequest $request,
+        string $project_url,
+        string|int $task_id,
+        UpdateTaskService $task_service
+    ) {
+        $project_id = GetProjectId::byUrl($project_url);
         $validate_data = $request->validated();
 
-        if (isset($validate_data['end_date'])) {
-            $validate_data['end_date'] .= ' ' . $validate_data['end_time'];
-            unset($validate_data['end_time']);
+        $allowed = [];
+
+        if (Gate::allows('task.update.tasklist', $project_id)) {
+            $allowed[] = 'tasklist_id';
         }
 
-        $task = Task::findOrFail($task_id);
-        $task->update($validate_data);
+        if (Gate::allows('task.update.executor.self', $project_id)) {
+            if ($validate_data['executor_id'] == Auth::id() || $validate_data['executor_id'] == null) {
+                $allowed[] = 'executor_id';
+            }
+        }
+
+        if (Gate::allows('task.update.status', $project_id)) {
+            $allowed[] = 'in_progress';
+        }
+
+        if (Gate::allows('task.update', $project_id)) {
+            $allowed = array_keys($validate_data);
+        }
+
+        $task_service->execute(
+            Arr::only($request->validated(), $allowed),
+            $task_id
+        );
 
         return redirect()->route('project.show', $project_url);
     }
@@ -141,12 +156,13 @@ class TaskController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(string $project_url, string|int $task_id)
+    public function destroy(string $project_url, string|int $task_id, DeleteTaskService $task_service)
     {
         $project_id = GetProjectId::byUrl($project_url);
-        $this->authorize('delete', [Task::class, $project_id]);
+        Gate::authorize('task.delete', $project_id);
 
-        Task::where('id', $task_id)->delete();
+        $task_service->execute($task_id);
+
         return redirect()->route('project.show', $project_url);
     }
 
