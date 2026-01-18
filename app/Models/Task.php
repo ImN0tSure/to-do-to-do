@@ -61,25 +61,22 @@ class Task extends Model
     public function createDeadlineNotification($event_type)
     {
         if ($this->executor) {
-            Notification::create([
-                'user_id' => $this->executor->user_id,
-                'notifiable_type' => 'task_deadline',
-                'notifiable_id' => $this->id,
-                'event' => 'deadline',
-                'event_type' => $event_type,
-            ]);
+            $this->notify($this->executor->user_id, $event_type);
             return;
         }
 
-        $curators = $this->project->participantRecords()->where('status', 1)->get();
+        $curators = $this->project->participantRecords()->where('role', "!=", 'executor')->get();
         $curators->map(function ($curator) use ($event_type) {
-            Notification::create([
-                'user_id' => $curator->user_id,
-                'notifiable_type' => 'task_deadline',
-                'notifiable_id' => $this->id,
-                'event' => 'deadline',
-                'event_type' => $event_type,
-            ]);
+            $this->notify($curator->user_id, $event_type);
         });
+    }
+    private function notify($user_id, string $event_type) {
+        Notification::create([
+            'user_id' => $user_id,
+            'notifiable_type' => 'task_deadline',
+            'notifiable_id' => $this->id,
+            'event' => 'deadline',
+            'event_type' => $event_type,
+        ]);
     }
 }
