@@ -62,6 +62,7 @@ Route::group(['middleware' => 'auth:sanctum'], function () {
 
     Route::put('/invitation/accept', [InvitationController::class, 'accept']);
     Route::put('/invitation/decline', [InvitationController::class, 'decline']);
+    Route::put('/invitation/response', [InvitationController::class, 'update']);
 
 });
 

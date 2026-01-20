@@ -30,7 +30,8 @@ class ResponseInvitationRequest extends FormRequest
                 Rule::exists('invitations', 'id')->where(function ($query) {
                     $query->where('invitee_id', Auth::id());
                 })
-            ]
+            ],
+            'is_accepted' => ['boolean'],
         ];
     }
 
@@ -38,7 +39,8 @@ class ResponseInvitationRequest extends FormRequest
     {
         return [
             'notifiable_id' => 'id обязателен и должен быть числом',
-            'notifiable_id.exists' => 'Нет пользователя с таким приглашением'
+            'notifiable_id.exists' => 'Нет пользователя с таким приглашением',
+            'is_accepted.boolean' => 'Значение должно быть типа boolean'
         ];
     }
 }

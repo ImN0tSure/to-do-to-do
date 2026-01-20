@@ -7,23 +7,21 @@ use App\Http\Requests\ResponseInvitationRequest;
 use App\Models\Invitation;
 use App\Models\Notification;
 use App\Models\ProjectParticipant;
-use App\Models\User;
 use App\Services\GetProjectId;
+use App\Services\Invitations\InvitationCreateService;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Gate;
 
 class InvitationController extends Controller
 {
-    public function create(CreateInvitationRequest $request): \Illuminate\Http\JsonResponse
-    {
-        $invitee_id = User::where('email', $request->email)->first()->id;
+    public function create(
+        CreateInvitationRequest $request,
+        InvitationCreateService $invitation_service
+    ): \Illuminate\Http\JsonResponse {
         $project_id = GetProjectId::byUrl($request->project_url);
+        Gate::authorize('project.participant.invite', $project_id);
 
-
-        Invitation::create([
-            'inviter_id' => Auth::id(),
-            'invitee_id' => $invitee_id,
-            'project_id' => (integer)$project_id,
-        ]);
+        $invitation_service->execute($request->email, $project_id);
 
         return response()->json([
             'status' => 'success',
