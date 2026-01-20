@@ -25,6 +25,7 @@ class UserTaskController extends Controller
                 'priority' => $task->priority,
                 'projectUrl' => $task->project->url,
                 'time' => HowMuchTime::expiresIn($task->end_date),
+                'end_date' => strtotime($task->end_date),
             ];
         }
 

@@ -34,6 +34,7 @@ class ProjectTaskController extends Controller
                 'projectUrl' => $task->project->url,
                 'time' => HowMuchTime::expiresIn($task->end_date),
                 'tasklist_id' => $task->tasklist_id,
+                'end_date' => strtotime($task->end_date),
             ];
         }
 
